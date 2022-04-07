@@ -1,5 +1,6 @@
 package dev.programadorthi.core
 
+import dev.programadorthi.core.extension.basicValueManager
 import dev.programadorthi.core.extension.getValue
 import dev.programadorthi.core.extension.setValue
 import dev.programadorthi.fake.ErrorHandlerFake
@@ -14,39 +15,39 @@ import kotlin.test.assertIs
 class ValueManagerTest {
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue() {
-        val manager = ValueManager(0)
+        val manager = basicValueManager(0)
         assertEquals(0, manager.value, "Current value is not equals to initial value")
     }
 
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue_WhenUsingDelegateProperty() {
-        val value by ValueManager(0)
+        val value by basicValueManager(0)
         assertEquals(0, value, "Current value is not equals to initial value")
     }
 
     @Test
     fun shouldChangeCurrentValue_WhenCallUpdate() {
-        val manager = ValueManager(0)
+        val manager = basicValueManager(0)
         manager.update(manager.value + 1)
         assertEquals(1, manager.value, "Call to update function is not updating current value")
     }
 
     @Test
     fun shouldChangeCurrentValue_WhenCallUpdateUsingDelegateProperty() {
-        var value by ValueManager(0)
+        var value by basicValueManager(0)
         value++ // or value = value + 1
         assertEquals(1, value, "Updating by delegate property is not updating current value")
     }
 
     @Test
     fun shouldNotInitiateClosed() {
-        val manager = ValueManager(0)
+        val manager = basicValueManager(0)
         assertEquals(false, manager.closed, "Value manager has started in closed state")
     }
 
     @Test
     fun shouldCloseAfterRequestedToClose() {
-        val manager = ValueManager(0)
+        val manager = basicValueManager(0)
         manager.close()
         assertEquals(true, manager.closed, "Value manager still opened after request to close")
     }
@@ -56,7 +57,7 @@ class ValueManagerTest {
         val expected = listOf(1, 2, 3, 4, 5)
         val result = mutableListOf<Int>()
 
-        val manager = ValueManager(0)
+        val manager = basicValueManager(0)
         manager.collect(result::add)
         repeat(times = 5) {
             manager.update(manager.value + 1)
@@ -68,7 +69,7 @@ class ValueManagerTest {
     @Test
     fun shouldNotUpdateValueAfterRequestedToClose() {
         val errorHandlerFake = ErrorHandlerFake()
-        val manager = ValueManager(initialValue = 0, errorHandler = errorHandlerFake)
+        val manager = basicValueManager(initialValue = 0, errorHandler = errorHandlerFake)
         manager.close()
         manager.update(manager.value + 1)
 
@@ -86,7 +87,7 @@ class ValueManagerTest {
 
         val errorHandlerFake = ErrorHandlerFake()
         val transformHandlerFake = TransformHandlerFake()
-        val manager = ValueManager(
+        val manager = basicValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake,
             transformHandler = transformHandlerFake
@@ -109,7 +110,7 @@ class ValueManagerTest {
     @Test
     fun shouldCallTransformHandler_WhenHavingACustomUpdateLogic() {
         val transformHandlerFake = TransformHandlerFake()
-        var value by ValueManager(
+        var value by basicValueManager(
             initialValue = 0,
             transformHandler = transformHandlerFake
         )
@@ -134,7 +135,7 @@ class ValueManagerTest {
         )
 
         val lifecycleHandlerFake = LifecycleHandlerFake()
-        var value by ValueManager(
+        var value by basicValueManager(
             initialValue = 0,
             lifecycleHandler = lifecycleHandlerFake
         )

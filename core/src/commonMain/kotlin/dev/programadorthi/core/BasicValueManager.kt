@@ -5,7 +5,7 @@ import dev.programadorthi.core.handler.ErrorHandler
 import dev.programadorthi.core.handler.LifecycleHandler
 import dev.programadorthi.core.handler.TransformHandler
 
-internal class ValueManagerImpl<T>(
+internal class BasicValueManager<T>(
     initialValue: T,
     errorHandler: ErrorHandler,
     lifecycleHandler: LifecycleHandler<T>,
