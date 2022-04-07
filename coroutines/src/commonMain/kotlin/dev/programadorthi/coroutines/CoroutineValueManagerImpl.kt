@@ -4,6 +4,7 @@ import dev.programadorthi.core.action.CollectAction
 import dev.programadorthi.core.handler.ErrorHandler
 import dev.programadorthi.core.handler.LifecycleHandler
 import dev.programadorthi.core.handler.TransformHandler
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -11,21 +12,19 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 internal class CoroutineValueManagerImpl<T>(
     initialValue: T,
     errorHandler: ErrorHandler,
     lifecycleHandler: LifecycleHandler<T>,
     transformHandler: TransformHandler<T>,
-    coroutineContext: CoroutineContext
+    coroutineDispatcher: CoroutineDispatcher
 ) : CoroutineValueManager<T>,
     ErrorHandler by errorHandler,
     LifecycleHandler<T> by lifecycleHandler,
     TransformHandler<T> by transformHandler {
 
-    private val scope = CoroutineScope(coroutineContext)
+    private val scope = CoroutineScope(coroutineDispatcher)
     private val stateFlow = MutableStateFlow(initialValue)
     private var collectJob: Job? = null
 
@@ -63,7 +62,7 @@ internal class CoroutineValueManagerImpl<T>(
             val previous = stateFlow.value
             onBeforeChange(previous, value)
             val newValue = transform(value)
-            if (stateFlow.tryEmit(value)) {
+            if (stateFlow.tryEmit(newValue)) {
                 onAfterChange(previous, newValue)
             }
         }.onFailure(::onError)
