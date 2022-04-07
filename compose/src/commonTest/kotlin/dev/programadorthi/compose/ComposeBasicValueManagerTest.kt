@@ -1,6 +1,6 @@
 package dev.programadorthi.compose
 
-import dev.programadorthi.compose.extension.composeBasicValueManager
+import dev.programadorthi.compose.extension.composeValueManager
 import dev.programadorthi.core.extension.getValue
 import dev.programadorthi.core.extension.setValue
 import dev.programadorthi.fake.ErrorHandlerFake
@@ -19,14 +19,14 @@ class ComposeBasicValueManagerTest {
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue() = compositionTest {
         val expected = 0
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
         assertEquals(expected, manager.value, "Current value is not equals to initial value")
     }
 
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue_WhenUsingDelegateProperty() = compositionTest {
         val expected = 0
-        val value by composeBasicValueManager(initialValue = 0)
+        val value by composeValueManager(initialValue = 0)
         assertEquals(expected, value, "Current value is not equals to initial value")
     }
 
@@ -34,7 +34,7 @@ class ComposeBasicValueManagerTest {
     fun shouldChangeCurrentValue_WhenCallUpdate() = compositionTest {
         val expected = listOf(0, 1)
         val result = mutableListOf<Int>()
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
 
         compose {
             // Using recomposition to get next values
@@ -51,7 +51,7 @@ class ComposeBasicValueManagerTest {
     fun shouldChangeCurrentValue_WhenCallUpdateUsingDelegateProperty() = compositionTest {
         val expected = listOf(0, 1)
         val result = mutableListOf<Int>()
-        var value by composeBasicValueManager(initialValue = 0)
+        var value by composeValueManager(initialValue = 0)
 
         compose {
             // Using recomposition to get next values
@@ -66,26 +66,26 @@ class ComposeBasicValueManagerTest {
 
     @Test
     fun shouldNotInitiateClosed() = compositionTest {
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
         assertEquals(false, manager.closed, "Value manager has started in closed state")
     }
 
     @Test
     fun shouldCloseAfterRequestedToClose() = compositionTest {
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
         manager.close()
         assertEquals(true, manager.closed, "Value manager still opened after request to close")
     }
 
     @Test
     fun shouldCollectAllEmittedValue_WhenCollectIsNotSuspend() = compositionTest {
-        val expected = listOf(1, 2, 3, 4, 5)
+        val expected = listOf(0, 1, 2, 3, 4)
         val result = mutableListOf<Int>()
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
 
         manager.collect(result::add)
 
-        repeat(times = 5) {
+        repeat(times = 4) {
             manager.update(manager.value + 1)
         }
 
@@ -96,7 +96,7 @@ class ComposeBasicValueManagerTest {
     fun shouldCollectAllEmittedValue_WhenCollectIsSuspend() = compositionTest {
         val expected = listOf(0, 1, 2, 3, 4)
         val result = mutableListOf<Int>()
-        val manager = composeBasicValueManager(initialValue = 0)
+        val manager = composeValueManager(initialValue = 0)
 
         compose {
             // Using recomposition to get next values
@@ -114,7 +114,7 @@ class ComposeBasicValueManagerTest {
     @Test
     fun shouldNotUpdateValueAfterRequestedToClose() = compositionTest {
         val errorHandlerFake = ErrorHandlerFake()
-        val manager = composeBasicValueManager(
+        val manager = composeValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake
         )
@@ -136,7 +136,7 @@ class ComposeBasicValueManagerTest {
 
         val errorHandlerFake = ErrorHandlerFake()
         val transformHandlerFake = TransformHandlerFake()
-        val manager = composeBasicValueManager(
+        val manager = composeValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake,
             transformHandler = transformHandlerFake
@@ -168,7 +168,7 @@ class ComposeBasicValueManagerTest {
     @Test
     fun shouldCallTransformHandler_WhenHavingACustomUpdateLogic() = compositionTest {
         val transformHandlerFake = TransformHandlerFake()
-        var value by composeBasicValueManager(
+        var value by composeValueManager(
             initialValue = 0,
             transformHandler = transformHandlerFake
         )
@@ -193,7 +193,7 @@ class ComposeBasicValueManagerTest {
         )
 
         val lifecycleHandlerFake = LifecycleHandlerFake()
-        var value by composeBasicValueManager(
+        var value by composeValueManager(
             initialValue = 0,
             lifecycleHandler = lifecycleHandlerFake
         )

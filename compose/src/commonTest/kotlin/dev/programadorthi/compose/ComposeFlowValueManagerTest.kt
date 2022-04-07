@@ -2,20 +2,14 @@ package dev.programadorthi.compose
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import dev.programadorthi.compose.extension.composeFlowValueManager
+import dev.programadorthi.compose.extension.composeValueManager
 import dev.programadorthi.core.extension.getValue
 import dev.programadorthi.core.extension.setValue
-import dev.programadorthi.coroutines.extension.flowValueManager
 import dev.programadorthi.fake.ErrorHandlerFake
 import dev.programadorthi.fake.LifecycleHandlerFake
 import dev.programadorthi.fake.TransformHandlerFake
 import dev.programadorthi.fake.compositionTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -26,51 +20,52 @@ import kotlin.test.assertIs
 class ComposeFlowValueManagerTest {
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue() = compositionTest {
-        val manager = composeFlowValueManager(0)
+        val manager = composeValueManager(0)
         assertEquals(0, manager.value, "Current value is not equals to initial value")
     }
 
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue_WhenUsingDelegateProperty() = compositionTest {
-        val value by composeFlowValueManager(0)
+        val value by composeValueManager(0)
         assertEquals(0, value, "Current value is not equals to initial value")
     }
 
     @Test
     fun shouldChangeCurrentValue_WhenCallUpdate() = compositionTest {
-        val manager = composeFlowValueManager(0)
+        val manager = composeValueManager(0)
         manager.update(manager.value + 1)
         assertEquals(1, manager.value, "Call to update function is not updating current value")
     }
 
     @Test
     fun shouldChangeCurrentValue_WhenCallUpdateUsingDelegateProperty() = compositionTest {
-        var value by composeFlowValueManager(0)
+        var value by composeValueManager(0)
         value++ // or value = value + 1
         assertEquals(1, value, "Updating by delegate property is not updating current value")
     }
 
     @Test
     fun shouldNotInitiateClosed() = compositionTest {
-        val manager = composeFlowValueManager(0)
+        val manager = composeValueManager(0)
         assertEquals(false, manager.closed, "Value manager has started in closed state")
     }
 
     @Test
     fun shouldCloseAfterRequestedToClose() = compositionTest {
-        val manager = composeFlowValueManager(0)
+        val manager = composeValueManager(0)
         manager.close()
         assertEquals(true, manager.closed, "Value manager still opened after request to close")
     }
 
     @Test
     fun shouldCollectAllEmittedValue_WhenCollectIsNotSuspend() = compositionTest {
-        val expected = listOf(1, 2, 3, 4, 5)
+        val expected = listOf(0, 1, 2, 3, 4)
         val result = mutableListOf<Int>()
+        val manager = composeValueManager(0)
 
-        val manager = composeFlowValueManager(0)
         manager.collect(result::add)
-        repeat(times = 5) {
+
+        repeat(times = 4) {
             manager.update(manager.value + 1)
         }
 
@@ -82,7 +77,7 @@ class ComposeFlowValueManagerTest {
         val expected = listOf(0, 1, 2, 3, 4)
         val result = mutableSetOf<Int>()
 
-        val manager = composeFlowValueManager(0)
+        val manager = composeValueManager(0)
 
         compose {
             val value by manager.collectAsState()
@@ -102,7 +97,7 @@ class ComposeFlowValueManagerTest {
     @Test
     fun shouldNotUpdateValueAfterRequestedToClose() = compositionTest {
         val errorHandlerFake = ErrorHandlerFake()
-        val manager = composeFlowValueManager(
+        val manager = composeValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake
         )
@@ -123,7 +118,7 @@ class ComposeFlowValueManagerTest {
 
         val errorHandlerFake = ErrorHandlerFake()
         val transformHandlerFake = TransformHandlerFake()
-        val manager = composeFlowValueManager(
+        val manager = composeValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake,
             transformHandler = transformHandlerFake
@@ -150,7 +145,7 @@ class ComposeFlowValueManagerTest {
     @Test
     fun shouldCallTransformHandler_WhenHavingACustomUpdateLogic() = compositionTest {
         val transformHandlerFake = TransformHandlerFake()
-        var value by composeFlowValueManager(
+        var value by composeValueManager(
             initialValue = 0,
             transformHandler = transformHandlerFake
         )
@@ -175,7 +170,7 @@ class ComposeFlowValueManagerTest {
         )
 
         val lifecycleHandlerFake = LifecycleHandlerFake()
-        var value by composeFlowValueManager(
+        var value by composeValueManager(
             initialValue = 0,
             lifecycleHandler = lifecycleHandlerFake
         )

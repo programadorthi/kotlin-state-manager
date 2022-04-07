@@ -10,5 +10,5 @@ interface ValueManager<T> : Closeable {
 
     fun collect(action: CollectAction<T>)
 
-    fun update(value: T)
+    fun update(newValue: T)
 }

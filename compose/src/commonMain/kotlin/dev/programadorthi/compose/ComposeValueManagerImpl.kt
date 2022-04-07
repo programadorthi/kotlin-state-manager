@@ -1,17 +1,17 @@
-package dev.programadorthi.coroutines
+package dev.programadorthi.compose
 
 import dev.programadorthi.core.handler.ErrorHandler
 import dev.programadorthi.core.handler.LifecycleHandler
 import dev.programadorthi.core.handler.TransformHandler
 import kotlinx.coroutines.CoroutineDispatcher
 
-internal class FlowValueManagerImpl<T>(
+internal class ComposeValueManagerImpl<T>(
     initialValue: T,
     private val errorHandler: ErrorHandler,
     private val lifecycleHandler: LifecycleHandler<T>,
     private val transformHandler: TransformHandler<T>,
     coroutineDispatcher: CoroutineDispatcher
-) : BaseFlowValueManager<T>(initialValue, coroutineDispatcher) {
+) : BaseComposeValueManager<T>(initialValue, coroutineDispatcher) {
 
     override fun onAfterChange(previous: T, current: T) {
         super.onAfterChange(previous, current)
