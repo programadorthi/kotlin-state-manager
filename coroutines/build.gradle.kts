@@ -2,10 +2,6 @@ plugins {
     kotlin("multiplatform")
 }
 
-repositories {
-    mavenCentral()
-}
-
 kotlin {
     jvm {
         compilations.all {

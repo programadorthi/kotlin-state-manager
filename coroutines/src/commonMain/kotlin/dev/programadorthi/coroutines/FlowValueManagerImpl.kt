@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-internal class CoroutineValueManagerImpl<T>(
+internal class FlowValueManagerImpl<T>(
     initialValue: T,
     errorHandler: ErrorHandler,
     lifecycleHandler: LifecycleHandler<T>,
     transformHandler: TransformHandler<T>,
     coroutineDispatcher: CoroutineDispatcher
-) : CoroutineValueManager<T>,
+) : FlowValueManager<T>,
     ErrorHandler by errorHandler,
     LifecycleHandler<T> by lifecycleHandler,
     TransformHandler<T> by transformHandler {

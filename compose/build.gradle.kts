@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
@@ -12,7 +13,7 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    js(BOTH) {
+    /*js(BOTH) {
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true
@@ -26,27 +27,32 @@ kotlin {
         hostOs == "Linux" -> linuxX64("native")
         isMingwX64 -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
+    }*/
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
+                implementation(project(":core"))
+                implementation(project(":coroutines"))
+                implementation(kotlin("stdlib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+                implementation(compose.runtime)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
             }
         }
 
         val jvmMain by getting
         val jvmTest by getting
 
-        val jsMain by getting
+        /*val jsMain by getting
         val jsTest by getting
 
         val nativeMain by getting
-        val nativeTest by getting
+        val nativeTest by getting*/
     }
 }
