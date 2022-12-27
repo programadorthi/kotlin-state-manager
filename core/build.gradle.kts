@@ -2,6 +2,12 @@ plugins {
     kotlin("multiplatform")
 }
 
+repositories {
+    mavenCentral()
+    google()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+}
+
 kotlin {
     jvm {
         compilations.all {
