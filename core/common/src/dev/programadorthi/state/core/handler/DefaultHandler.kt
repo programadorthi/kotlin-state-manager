@@ -1,6 +1,6 @@
 package dev.programadorthi.state.core.handler
 
-internal class DefaultHandler<T> : ErrorHandler,
+public class DefaultHandler<T> : ErrorHandler,
     AfterChangeLifecycleHandler<T>,
     BeforeChangeLifecycleHandler<T>,
     TransformHandler<T> {

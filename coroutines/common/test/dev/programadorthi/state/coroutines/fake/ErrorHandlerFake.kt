@@ -1,6 +1,6 @@
-package dev.programadorthi.fake
+package dev.programadorthi.state.coroutines.fake
 
-import dev.programadorthi.core.handler.ErrorHandler
+import dev.programadorthi.state.core.handler.ErrorHandler
 
 internal class ErrorHandlerFake : ErrorHandler {
     private var exceptionsList = mutableListOf<Throwable>()

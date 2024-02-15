@@ -1,6 +1,7 @@
-package dev.programadorthi.fake
+package dev.programadorthi.state.coroutines.fake
 
-import dev.programadorthi.core.handler.TransformHandler
+import dev.programadorthi.state.core.handler.TransformHandler
+
 
 internal class TransformHandlerFake : TransformHandler<Int> {
     var breakable: Throwable? = null

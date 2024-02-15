@@ -1,8 +1,7 @@
-package dev.programadorthi.coroutines
+package dev.programadorthi.state.coroutines
 
-import dev.programadorthi.core.BaseValueManager
-import dev.programadorthi.core.action.CollectAction
-import kotlinx.coroutines.CoroutineDispatcher
+import dev.programadorthi.state.core.BaseValueManager
+import dev.programadorthi.state.core.action.CollectAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -10,13 +9,14 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseFlowValueManager<T>(
+public abstract class BaseFlowValueManager<T>(
     initialValue: T,
-    coroutineDispatcher: CoroutineDispatcher
+    coroutineContext: CoroutineContext
 ) : BaseValueManager<T>(initialValue), FlowValueManager<T> {
 
-    private val scope = CoroutineScope(coroutineDispatcher)
+    private val scope = CoroutineScope(coroutineContext)
     private val stateFlow = MutableStateFlow(initialValue)
     private var collectJob: Job? = null
 

@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 rootProject.name = "kotlin-state-manager"
 
 include("core")
-//include("coroutines")
+include("coroutines")
 //include("compose")
 /*
 include(":samples:compose:norris-facts:android")

@@ -1,8 +1,10 @@
-package dev.programadorthi.fake
+package dev.programadorthi.state.coroutines.fake
 
-import dev.programadorthi.core.handler.LifecycleHandler
+import dev.programadorthi.state.core.handler.AfterChangeLifecycleHandler
+import dev.programadorthi.state.core.handler.BeforeChangeLifecycleHandler
 
-internal class LifecycleHandlerFake : LifecycleHandler<Int> {
+
+internal class LifecycleHandlerFake : AfterChangeLifecycleHandler<Int>, BeforeChangeLifecycleHandler<Int> {
     private val eventsList = mutableListOf<LifecycleEvent>()
     val events: List<LifecycleEvent>
         get() = eventsList
