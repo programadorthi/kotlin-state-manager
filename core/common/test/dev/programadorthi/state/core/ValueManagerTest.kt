@@ -6,10 +6,12 @@ import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.core.fake.ErrorHandlerFake
 import dev.programadorthi.state.core.fake.LifecycleHandlerFake
 import dev.programadorthi.state.core.fake.TransformHandlerFake
+import dev.programadorthi.state.core.validation.Validator
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 
 internal class ValueManagerTest {
@@ -28,7 +30,9 @@ internal class ValueManagerTest {
     @Test
     fun shouldChangeCurrentValue_WhenCallUpdate() {
         val manager = basicValueManager(0)
-        manager.update(manager.value + 1)
+        manager.update { value ->
+            value + 1
+        }
         assertEquals(1, manager.value, "Call to update function is not updating current value")
     }
 
@@ -60,7 +64,9 @@ internal class ValueManagerTest {
         val manager = basicValueManager(0)
         manager.collect(result::add)
         repeat(times = 5) {
-            manager.update(manager.value + 1)
+            manager.update { value ->
+                value + 1
+            }
         }
 
         assertContentEquals(expected, result, "Collect function is not collecting all updated values")
@@ -71,7 +77,9 @@ internal class ValueManagerTest {
         val errorHandlerFake = ErrorHandlerFake()
         val manager = basicValueManager(initialValue = 0, errorHandler = errorHandlerFake)
         manager.close()
-        manager.update(manager.value + 1)
+        manager.update { value ->
+            value + 1
+        }
 
         assertEquals(1, errorHandlerFake.exceptions.size, "Missing exception on update value after close manager")
         assertIs<IllegalStateException>(
@@ -98,7 +106,9 @@ internal class ValueManagerTest {
                 val ex = Exception("Exception number $it")
                 expected += ex
                 transformHandlerFake.breakable = ex
-                manager.update(manager.value + 1)
+                manager.update { value ->
+                    value + 1
+                }
             }
         }
 
@@ -146,5 +156,21 @@ internal class ValueManagerTest {
         value -= 1
 
         assertContentEquals(expected, lifecycleHandlerFake.events, "Lifecycle events was ignored in the update value flow")
+    }
+
+    @Test
+    fun shouldNotUpdateTheValue_WhenHaveInvalidValue() {
+        val manager = basicValueManager(0)
+        manager.addValidator(object : Validator<Int> {
+            override val message: (Int) -> String = { "Value $it should be positive" }
+
+            override fun isValid(value: Int): Boolean = value > 0
+        })
+        manager.update { value ->
+            value - 1
+        }
+        assertFalse(manager.isValid, "Value should be invalid")
+        assertEquals("Value -1 should be positive", manager.messages.first())
+        assertEquals(0, manager.value, "Value should be equals to initial value")
     }
 }
