@@ -8,7 +8,8 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+// FIXME: Build was configured to prefer settings repositories over project repositories but repository 'Node Distributions at https://nodejs.org/dist' was added by unknown code
+//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
         google()
