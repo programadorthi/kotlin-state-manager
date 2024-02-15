@@ -21,7 +21,7 @@ kotlin {
     js(BOTH) {
         browser {
             commonWebpackConfig {
-                cssSupport.enabled = true
+                //cssSupport.enabled = true
             }
         }
     }
