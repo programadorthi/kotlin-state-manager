@@ -8,8 +8,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    // PREFER_PROJECT because on Windows isMingwX64 add a ivy repository automatically
-    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
         google()
@@ -20,8 +19,8 @@ dependencyResolutionManagement {
 rootProject.name = "kotlin-state-manager"
 
 include("core")
-include("coroutines")
-include("compose")
+//include("coroutines")
+//include("compose")
 /*
 include(":samples:compose:norris-facts:android")
 include(":samples:compose:norris-facts:common")
