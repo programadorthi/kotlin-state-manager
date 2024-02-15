@@ -137,7 +137,8 @@ internal class ValueManagerTest {
         val lifecycleHandlerFake = LifecycleHandlerFake()
         var value by basicValueManager(
             initialValue = 0,
-            lifecycleHandler = lifecycleHandlerFake
+            onAfterChange = lifecycleHandlerFake,
+            onBeforeChange = lifecycleHandlerFake,
         )
 
         value += 1
