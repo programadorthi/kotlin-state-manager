@@ -12,7 +12,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-class ValueManagerTest {
+internal class ValueManagerTest {
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue() {
         val manager = basicValueManager(0)

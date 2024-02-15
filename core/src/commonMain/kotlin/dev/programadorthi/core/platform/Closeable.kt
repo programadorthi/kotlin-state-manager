@@ -1,5 +1,5 @@
 package dev.programadorthi.core.platform
 
-expect interface Closeable {
-    fun close()
+public expect interface Closeable {
+    public fun close()
 }

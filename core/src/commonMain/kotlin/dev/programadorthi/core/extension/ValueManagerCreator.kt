@@ -7,7 +7,7 @@ import dev.programadorthi.core.handler.ErrorHandler
 import dev.programadorthi.core.handler.LifecycleHandler
 import dev.programadorthi.core.handler.TransformHandler
 
-fun <T> basicValueManager(
+public fun <T> basicValueManager(
     initialValue: T,
     errorHandler: ErrorHandler = DefaultHandler<T>(),
     lifecycleHandler: LifecycleHandler<T> = DefaultHandler(),

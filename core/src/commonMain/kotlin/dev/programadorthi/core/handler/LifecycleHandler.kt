@@ -1,6 +1,6 @@
 package dev.programadorthi.core.handler
 
-interface LifecycleHandler<in T> {
-    fun onAfterChange(previous: T, current: T) {}
-    fun onBeforeChange(current: T, next: T) {}
+public interface LifecycleHandler<in T> {
+    public fun onAfterChange(previous: T, current: T) {}
+    public fun onBeforeChange(current: T, next: T) {}
 }

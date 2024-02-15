@@ -1,3 +1,3 @@
 package dev.programadorthi.core.handler
 
-class DefaultHandler<T> : ErrorHandler, LifecycleHandler<T>, TransformHandler<T>
+internal class DefaultHandler<T> : ErrorHandler, LifecycleHandler<T>, TransformHandler<T>

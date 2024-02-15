@@ -2,7 +2,7 @@ package dev.programadorthi.core
 
 import dev.programadorthi.core.action.CollectAction
 
-abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
+public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
 
     private var opened: Boolean = true
     private var collectAction: CollectAction<T>? = null

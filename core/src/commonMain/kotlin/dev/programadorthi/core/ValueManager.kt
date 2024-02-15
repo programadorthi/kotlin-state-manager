@@ -3,12 +3,12 @@ package dev.programadorthi.core
 import dev.programadorthi.core.action.CollectAction
 import dev.programadorthi.core.platform.Closeable
 
-interface ValueManager<T> : Closeable {
-    val closed: Boolean
+public interface ValueManager<T> : Closeable {
+    public val closed: Boolean
 
-    val value: T
+    public val value: T
 
-    fun collect(action: CollectAction<T>)
+    public fun collect(action: CollectAction<T>)
 
-    fun update(newValue: T)
+    public fun update(newValue: T)
 }
