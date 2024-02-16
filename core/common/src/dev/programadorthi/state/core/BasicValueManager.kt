@@ -1,17 +1,17 @@
 package dev.programadorthi.state.core
 
+import androidx.compose.runtime.SnapshotMutationPolicy
 import dev.programadorthi.state.core.handler.AfterChangeLifecycleHandler
 import dev.programadorthi.state.core.handler.BeforeChangeLifecycleHandler
 import dev.programadorthi.state.core.handler.ErrorHandler
-import dev.programadorthi.state.core.handler.TransformHandler
 
 internal class BasicValueManager<T>(
     initialValue: T,
+    policy: SnapshotMutationPolicy<T>,
     private val errorHandler: ErrorHandler,
     private val onAfterChange: AfterChangeLifecycleHandler<T>,
-    private val onBeforeChange: BeforeChangeLifecycleHandler<T>,
-    private val transformHandler: TransformHandler<T>
-) : BaseValueManager<T>(initialValue) {
+    private val onBeforeChange: BeforeChangeLifecycleHandler<T>
+) : BaseValueManager<T>(initialValue, policy) {
 
     override fun onAfterChange(previous: T, current: T) {
         super.onAfterChange(previous, current)
@@ -26,9 +26,5 @@ internal class BasicValueManager<T>(
     override fun onError(exception: Throwable) {
         super.onError(exception)
         errorHandler.onError(exception)
-    }
-
-    override fun transform(current: T): T {
-        return transformHandler.transform(current)
     }
 }

@@ -1,11 +1,10 @@
 package dev.programadorthi.state.core
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.extension.basicValueManager
-import dev.programadorthi.state.core.extension.getValue
-import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.core.fake.ErrorHandlerFake
 import dev.programadorthi.state.core.fake.LifecycleHandlerFake
-import dev.programadorthi.state.core.fake.TransformHandlerFake
 import dev.programadorthi.state.core.validation.Validator
 import kotlin.random.Random
 import kotlin.test.Test
@@ -94,43 +93,28 @@ internal class ValueManagerTest {
         val expected = mutableListOf<Throwable>()
 
         val errorHandlerFake = ErrorHandlerFake()
-        val transformHandlerFake = TransformHandlerFake()
         val manager = basicValueManager(
             initialValue = 0,
             errorHandler = errorHandlerFake,
-            transformHandler = transformHandlerFake
         )
 
         repeat(times = 10) {
             if (random.nextBoolean()) {
                 val ex = Exception("Exception number $it")
                 expected += ex
-                transformHandlerFake.breakable = ex
-                manager.update { value ->
-                    value + 1
+                manager.update {
+                    throw ex
                 }
             }
         }
 
         assertEquals(0, manager.value, "Value would be not updated when crashing")
-        assertEquals(expected.size, errorHandlerFake.exceptions.size, "Missing exceptions on update value crashing always")
-        assertContentEquals(expected, errorHandlerFake.exceptions, "Missing exceptions on update value crashing always")
-    }
-
-    @Test
-    fun shouldCallTransformHandler_WhenHavingACustomUpdateLogic() {
-        val transformHandlerFake = TransformHandlerFake()
-        var value by basicValueManager(
-            initialValue = 0,
-            transformHandler = transformHandlerFake
+        assertEquals(
+            expected.size,
+            errorHandlerFake.exceptions.size,
+            "Missing exceptions on update value crashing always"
         )
-        transformHandlerFake.transformable = { it * 2 }
-
-        repeat(times = 5) {
-            value += it
-        }
-
-        assertEquals(52, value, "Value was updated without call custom transform function")
+        assertContentEquals(expected, errorHandlerFake.exceptions, "Missing exceptions on update value crashing always")
     }
 
     @Test
@@ -155,7 +139,11 @@ internal class ValueManagerTest {
         value += 1
         value -= 1
 
-        assertContentEquals(expected, lifecycleHandlerFake.events, "Lifecycle events was ignored in the update value flow")
+        assertContentEquals(
+            expected,
+            lifecycleHandlerFake.events,
+            "Lifecycle events was ignored in the update value flow"
+        )
     }
 
     @Test

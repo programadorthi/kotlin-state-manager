@@ -1,5 +1,6 @@
 package dev.programadorthi.state.coroutines
 
+import androidx.compose.runtime.SnapshotMutationPolicy
 import dev.programadorthi.state.core.BaseValueManager
 import dev.programadorthi.state.core.action.CollectAction
 import kotlinx.coroutines.CoroutineScope
@@ -13,8 +14,9 @@ import kotlin.coroutines.CoroutineContext
 
 public abstract class BaseFlowValueManager<T>(
     initialValue: T,
-    coroutineContext: CoroutineContext
-) : BaseValueManager<T>(initialValue), FlowValueManager<T> {
+    coroutineContext: CoroutineContext,
+    policy: SnapshotMutationPolicy<T>,
+) : BaseValueManager<T>(initialValue, policy), FlowValueManager<T> {
 
     private val scope = CoroutineScope(coroutineContext)
     private val stateFlow = MutableStateFlow(initialValue)
@@ -26,8 +28,9 @@ public abstract class BaseFlowValueManager<T>(
     override val replayCache: List<T>
         get() = stateFlow.replayCache
 
-    override val value: T
+    override var value: T
         get() = stateFlow.value
+        set(value) = update { value }
 
     override fun close() {
         scope.cancel()

@@ -16,8 +16,6 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                api(project(":core"))
-                implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
             }
         }
