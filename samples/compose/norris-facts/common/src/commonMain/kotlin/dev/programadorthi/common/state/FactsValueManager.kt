@@ -1,9 +1,9 @@
 package dev.programadorthi.common.state
 
+import androidx.compose.runtime.structuralEqualityPolicy
 import dev.programadorthi.common.api.Fact
 import dev.programadorthi.common.api.NorrisApi
-import dev.programadorthi.compose.BaseComposeValueManager
-import kotlinx.coroutines.CoroutineDispatcher
+import dev.programadorthi.state.core.BaseValueManager
 
 /**
  * Sample using inheritance and providing access to all public methods
@@ -11,21 +11,20 @@ import kotlinx.coroutines.CoroutineDispatcher
  */
 class FactsValueManager(
     private val norrisApi: NorrisApi,
-    coroutineDispatcher: CoroutineDispatcher,
-) : BaseComposeValueManager<State<List<Fact>>>(
+) : BaseValueManager<State<List<Fact>>>(
     initialValue = State.Loading,
-    coroutineDispatcher = coroutineDispatcher
+    policy = structuralEqualityPolicy(),
 ) {
     /**
      * Sample using update function
      */
     suspend fun fetch(category: String) {
-        update(State.Loading)
+        value = State.Loading
         runCatching {
             val result = norrisApi.facts(category)
-            update(State.Success(result))
+            value = State.Success(result)
         }.onFailure { ex ->
-            update(State.Error(ex))
+            value = State.Error(ex)
         }
     }
 }

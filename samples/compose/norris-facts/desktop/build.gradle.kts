@@ -7,12 +7,15 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(11)
+
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
         }
         withJava()
     }
+
     sourceSets {
         val jvmMain by getting {
             dependencies {

@@ -13,25 +13,22 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.programadorthi.common.api.NorrisApi
 import dev.programadorthi.common.state.CategoriesValueManager
 import dev.programadorthi.common.state.FactsValueManager
 import dev.programadorthi.common.state.State
-import dev.programadorthi.compose.extension.rememberComposeValueManager
-import dev.programadorthi.core.extension.getValue
-import dev.programadorthi.core.extension.setValue
-import kotlinx.coroutines.Dispatchers
+import dev.programadorthi.state.core.extension.rememberBasicValueManager
 
 @Composable
 fun App() {
     val api = remember { NorrisApi() }
 
-    // You can create your composed value directly
-    // Using = instead of 'by' you can access flow or value manager functions
-    var selectedCategory by rememberComposeValueManager(initialValue = "random")
+    var selectedCategory by rememberBasicValueManager(initialValue = "random")
 
     DisposableEffect(api) {
         onDispose {
@@ -61,7 +58,7 @@ fun ComposeFacts(
     selectedCategory: String,
 ) {
     // As any instances inside composable function, don't forget to remember
-    val factsValueManager = remember { FactsValueManager(api, Dispatchers.Main) }
+    val factsValueManager = remember { FactsValueManager(api) }
 
     // Facts here is Compose State consumed by delegate properties
     val facts = factsValueManager.value
@@ -98,7 +95,7 @@ fun ComposeCategories(
     val categoriesValueManager = remember { CategoriesValueManager(api) }
 
     // Categories here is a custom State class directly
-    val categoriesState = categoriesValueManager.categories
+    val categoriesState by remember { categoriesValueManager.categories }
 
     LaunchedEffect(api) {
         categoriesValueManager.fetch()
@@ -108,11 +105,11 @@ fun ComposeCategories(
         CircularProgressIndicator()
     }
     if (categoriesState is State.Error) {
-        Text(text = "${categoriesState.exception}")
+        Text(text = "${(categoriesState as State.Error).exception}")
     }
     if (categoriesState is State.Success) {
         LazyRow {
-            items(categoriesState.result) { item ->
+            items((categoriesState as State.Success<List<String>>).result) { item ->
                 Text(item, modifier = Modifier.padding(8.dp).clickable { onSelectCategory(item) })
             }
         }

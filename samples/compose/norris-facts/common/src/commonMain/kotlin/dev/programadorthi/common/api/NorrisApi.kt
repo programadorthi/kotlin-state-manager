@@ -1,16 +1,12 @@
 package dev.programadorthi.common.api
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.expectSuccess
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 class NorrisApi {
@@ -18,11 +14,15 @@ class NorrisApi {
         install(Logging) {
             level = LogLevel.ALL
         }
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(Json {
-                ignoreUnknownKeys = true
-                prettyPrint = true
+        install(ContentNegotiation) {
+            json(json = Json {
+                encodeDefaults = true
                 isLenient = true
+                allowSpecialFloatingPointValues = true
+                allowStructuredMapKeys = true
+                prettyPrint = true
+                useArrayPolymorphism = false
+                ignoreUnknownKeys = true
             })
         }
     }
@@ -32,12 +32,12 @@ class NorrisApi {
     }
 
     suspend fun categories(): List<String> =
-        client.get("https://api.chucknorris.io/jokes/categories")
+        client.get("https://api.chucknorris.io/jokes/categories").body()
 
     suspend fun facts(category: String): List<Fact> {
         val result: Result = client.get("https://api.chucknorris.io/jokes/search") {
             parameter("query", category)
-        }
+        }.body()
         return result.result ?: emptyList()
     }
 }
