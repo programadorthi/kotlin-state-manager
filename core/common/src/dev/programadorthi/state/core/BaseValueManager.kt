@@ -1,9 +1,7 @@
 package dev.programadorthi.state.core
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SnapshotMutationPolicy
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.action.CollectAction
 import dev.programadorthi.state.core.action.UpdateAction
 import dev.programadorthi.state.core.validation.Validator
@@ -11,12 +9,12 @@ import dev.programadorthi.state.core.validation.Validator
 public abstract class BaseValueManager<T>(
     initialValue: T,
     private val policy: SnapshotMutationPolicy<T>,
-) : ValueManager<T> {
+) : ValueManager<T>, MutableState<T> {
 
     private val localMessages = mutableListOf<String>()
     private val validators = mutableListOf<Validator<T>>()
 
-    private var currentValue by mutableStateOf(initialValue, policy)
+    private var currentValue: T = initialValue
     private var collectAction: CollectAction<T>? = null
     private var opened: Boolean = true
 

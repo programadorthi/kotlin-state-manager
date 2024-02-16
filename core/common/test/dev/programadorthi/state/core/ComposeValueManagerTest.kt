@@ -3,10 +3,10 @@ package dev.programadorthi.state.core
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.compose.runComposeTest
 import dev.programadorthi.state.core.extension.basicValueManager
 import dev.programadorthi.state.core.extension.rememberBasicValueManager
+import dev.programadorthi.state.core.extension.setValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -60,38 +60,40 @@ internal class ComposeValueManagerTest {
     }
 
     @Test
-    fun shouldChangeCurrentValue_WhenCallUpdateUsingDelegateProperty() = runComposeTest { composition, recomposer ->
-        var value by basicValueManager(0)
-        var result = -1
+    fun shouldChangeCurrentValue_WhenCallUpdateUsingDelegateProperty() =
+        runComposeTest { composition, recomposer ->
+            var value by basicValueManager(0)
+            var result = -1
 
-        composition.setContent {
-            result = value
-        }
-
-        value += 1
-        recomposer()
-
-        assertEquals(1, result, "Updating by delegate property is not updating current value")
-    }
-
-    @Test
-    fun shouldChangeCurrentValue_WhenCallRememberedVersion() = runComposeTest { composition, recomposer ->
-        var update = false
-        var result = -1
-
-        composition.setContent {
-            var value by rememberBasicValueManager(0)
-
-            LaunchedEffect(update) {
-                value++
+            composition.setContent {
+                result = value
             }
 
-            result = value
+            value += 1
+            recomposer()
+
+            assertEquals(1, result, "Updating by delegate property is not updating current value")
         }
 
-        update = true
-        recomposer()
+    @Test
+    fun shouldChangeCurrentValue_WhenCallRememberedVersion() =
+        runComposeTest { composition, recomposer ->
+            var update = false
+            var result = -1
 
-        assertEquals(1, result, "Updating by delegate property is not updating current value")
-    }
+            composition.setContent {
+                var value by rememberBasicValueManager(0)
+
+                LaunchedEffect(update) {
+                    value++
+                }
+
+                result = value
+            }
+
+            update = true
+            recomposer()
+
+            assertEquals(1, result, "Updating by delegate property is not updating current value")
+        }
 }

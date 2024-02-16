@@ -1,8 +1,8 @@
 package dev.programadorthi.state.core
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.extension.basicValueManager
+import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.core.fake.ErrorHandlerFake
 import dev.programadorthi.state.core.fake.LifecycleHandlerFake
 import dev.programadorthi.state.core.validation.Validator
