@@ -30,7 +30,11 @@ public abstract class BaseFlowValueManager<T>(
 
     override var value: T
         get() = stateFlow.value
-        set(value) = update { value }
+        set(value) {
+            if (stateFlow.tryEmit(value)) {
+                super.value = value
+            }
+        }
 
     override fun close() {
         scope.cancel()
@@ -48,9 +52,5 @@ public abstract class BaseFlowValueManager<T>(
 
     override suspend fun collect(collector: FlowCollector<T>): Nothing {
         stateFlow.collect(collector)
-    }
-
-    override fun commit(value: T): Boolean {
-        return stateFlow.tryEmit(value)
     }
 }

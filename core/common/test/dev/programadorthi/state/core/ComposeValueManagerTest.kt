@@ -3,10 +3,10 @@ package dev.programadorthi.state.core
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.compose.runComposeTest
 import dev.programadorthi.state.core.extension.basicValueManager
 import dev.programadorthi.state.core.extension.rememberBasicValueManager
-import dev.programadorthi.state.core.extension.setValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

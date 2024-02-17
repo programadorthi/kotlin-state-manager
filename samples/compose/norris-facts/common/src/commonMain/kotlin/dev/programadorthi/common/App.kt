@@ -15,10 +15,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.programadorthi.common.api.NorrisApi
+import dev.programadorthi.common.login.LoginScreen
 import dev.programadorthi.common.state.CategoriesValueManager
 import dev.programadorthi.common.state.FactsValueManager
 import dev.programadorthi.common.state.State
@@ -26,7 +26,8 @@ import dev.programadorthi.state.core.extension.rememberBasicValueManager
 
 @Composable
 fun App() {
-    val api = remember { NorrisApi() }
+    LoginScreen()
+    /*val api = remember { NorrisApi() }
 
     var selectedCategory by rememberBasicValueManager(initialValue = "random")
 
@@ -49,7 +50,7 @@ fun App() {
             api = api,
             selectedCategory = selectedCategory,
         )
-    }
+    }*/
 }
 
 @Composable

@@ -3,8 +3,8 @@ package dev.programadorthi.state.coroutines
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import dev.programadorthi.state.coroutines.extension.flowValueManager
+import dev.programadorthi.state.coroutines.fake.ChangeHandlerFake
 import dev.programadorthi.state.coroutines.fake.ErrorHandlerFake
-import dev.programadorthi.state.coroutines.fake.LifecycleHandlerFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -146,19 +146,15 @@ class FlowValueManagerTest {
     @Test
     fun shouldCallLifecycleHandler_WhenUpdatingValue() = runTest {
         val expected = listOf(
-            LifecycleHandlerFake.LifecycleEvent.Before(0, 1),
-            LifecycleHandlerFake.LifecycleEvent.After(0, 1),
-            LifecycleHandlerFake.LifecycleEvent.Before(1, 2),
-            LifecycleHandlerFake.LifecycleEvent.After(1, 2),
-            LifecycleHandlerFake.LifecycleEvent.Before(2, 1),
-            LifecycleHandlerFake.LifecycleEvent.After(2, 1)
+            0 to 1,
+            1 to 2,
+            2 to 1,
         )
 
-        val lifecycleHandlerFake = LifecycleHandlerFake()
+        val changeHandler = ChangeHandlerFake()
         var value by flowValueManager(
             initialValue = 0,
-            onAfterChange = lifecycleHandlerFake,
-            onBeforeChange = lifecycleHandlerFake,
+            changeHandler = changeHandler,
         )
 
         value += 1
@@ -167,7 +163,7 @@ class FlowValueManagerTest {
 
         assertContentEquals(
             expected,
-            lifecycleHandlerFake.events,
+            changeHandler.events,
             "Lifecycle events was ignored in the update value flow"
         )
     }

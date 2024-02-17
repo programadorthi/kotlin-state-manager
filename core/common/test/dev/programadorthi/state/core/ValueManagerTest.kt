@@ -1,10 +1,12 @@
 package dev.programadorthi.state.core
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.extension.basicValueManager
-import dev.programadorthi.state.core.extension.setValue
+import dev.programadorthi.state.core.extension.isValid
+import dev.programadorthi.state.core.extension.messages
+import dev.programadorthi.state.core.fake.ChangeHandlerFake
 import dev.programadorthi.state.core.fake.ErrorHandlerFake
-import dev.programadorthi.state.core.fake.LifecycleHandlerFake
 import dev.programadorthi.state.core.validation.Validator
 import kotlin.random.Random
 import kotlin.test.Test
@@ -68,7 +70,11 @@ internal class ValueManagerTest {
             }
         }
 
-        assertContentEquals(expected, result, "Collect function is not collecting all updated values")
+        assertContentEquals(
+            expected,
+            result,
+            "Collect function is not collecting all updated values"
+        )
     }
 
     @Test
@@ -80,7 +86,11 @@ internal class ValueManagerTest {
             value + 1
         }
 
-        assertEquals(1, errorHandlerFake.exceptions.size, "Missing exception on update value after close manager")
+        assertEquals(
+            1,
+            errorHandlerFake.exceptions.size,
+            "Missing exception on update value after close manager"
+        )
         assertIs<IllegalStateException>(
             errorHandlerFake.exceptions.first(),
             "Update value after closed is not a IllegalStateException"
@@ -114,25 +124,25 @@ internal class ValueManagerTest {
             errorHandlerFake.exceptions.size,
             "Missing exceptions on update value crashing always"
         )
-        assertContentEquals(expected, errorHandlerFake.exceptions, "Missing exceptions on update value crashing always")
+        assertContentEquals(
+            expected,
+            errorHandlerFake.exceptions,
+            "Missing exceptions on update value crashing always"
+        )
     }
 
     @Test
     fun shouldCallLifecycleHandler_WhenUpdatingValue() {
         val expected = listOf(
-            LifecycleHandlerFake.LifecycleEvent.Before(0, 1),
-            LifecycleHandlerFake.LifecycleEvent.After(0, 1),
-            LifecycleHandlerFake.LifecycleEvent.Before(1, 2),
-            LifecycleHandlerFake.LifecycleEvent.After(1, 2),
-            LifecycleHandlerFake.LifecycleEvent.Before(2, 1),
-            LifecycleHandlerFake.LifecycleEvent.After(2, 1)
+            0 to 1,
+            1 to 2,
+            2 to 1,
         )
 
-        val lifecycleHandlerFake = LifecycleHandlerFake()
+        val changeHandler = ChangeHandlerFake()
         var value by basicValueManager(
             initialValue = 0,
-            onAfterChange = lifecycleHandlerFake,
-            onBeforeChange = lifecycleHandlerFake,
+            changeHandler = changeHandler,
         )
 
         value += 1
@@ -141,7 +151,7 @@ internal class ValueManagerTest {
 
         assertContentEquals(
             expected,
-            lifecycleHandlerFake.events,
+            changeHandler.events,
             "Lifecycle events was ignored in the update value flow"
         )
     }
@@ -157,8 +167,8 @@ internal class ValueManagerTest {
         manager.update { value ->
             value - 1
         }
-        assertFalse(manager.isValid, "Value should be invalid")
-        assertEquals("Value -1 should be positive", manager.messages.first())
+        assertFalse(manager.isValid(), "Value {${manager.value}} should be invalid")
+        assertEquals("Value -1 should be positive", manager.messages().first())
         assertEquals(0, manager.value, "Value should be equals to initial value")
     }
 }

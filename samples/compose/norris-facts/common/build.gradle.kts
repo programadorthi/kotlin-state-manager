@@ -21,6 +21,7 @@ kotlin {
                 api(compose.material)
                 api(project(":core"))
                 api(project(":coroutines"))
+                api(project(":validators"))
                 implementation("io.ktor:ktor-client-core:2.3.8")
                 implementation("io.ktor:ktor-client-cio:2.3.8")
                 implementation("io.ktor:ktor-client-logging:2.3.8")
