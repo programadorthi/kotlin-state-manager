@@ -1,10 +1,7 @@
 package dev.programadorthi.common.login
 
 import dev.programadorthi.state.core.extension.basicValueManager
-import dev.programadorthi.state.core.extension.isValid
 import dev.programadorthi.state.core.extension.plusAssign
-import dev.programadorthi.state.core.handler.AfterChangeLifecycleHandler
-import dev.programadorthi.state.core.handler.BeforeChangeLifecycleHandler
 import dev.programadorthi.state.validator.string.HasSizeValidator
 import dev.programadorthi.state.validator.string.IsEqualToValidator
 import dev.programadorthi.state.validator.string.IsNotBlankValidator
@@ -30,7 +27,9 @@ class LoginViewModel {
     }
 
     fun login() {
-        if (username.validate() && password.validate()) {
+        val uValid = username.validate()
+        val pValid = password.validate()
+        if (uValid && pValid) {
             println(">>>> Signed in!!")
         }
     }

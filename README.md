@@ -7,11 +7,10 @@ There are a lot of ways to use a Value/State Manager
 ### As a basic variable
 ```kotlin
 class CounterViewModel {
-    val counter = basicValueManager(initialValue = 0)
+    val counter = basicValueManager(initialValue = 0) // Basic value manager is already compose State
     val counterFlow = flowValueManager(initialValue = 0) // StateFlow version
-    val counterCompose = composeValueManager(initialValue = 0)// Jetpack Compose version
     
-    var value by basicValueManager(initialValue = 0) // Delegate property version available is all previous version
+    var value by basicValueManager(initialValue = 0) // Delegate property version available by compose getValue and setValue
 }
 ```
 
@@ -19,14 +18,14 @@ class CounterViewModel {
 ```kotlin
 class CounterViewModel {
     fun increment() {
-        anyValueManagerType.update(anyValueManagerType.value + 1)
+        anyValueManagerType.update { current -> current + 1 }
         anyValueManager = anyValueManager + 1 // update method as a Delegate property
         anyValueManager++ // same as previous
     }
 }
 ```
 
-### Listening for changes
+### Collecting value changes
 ```kotlin
 class CounterViewModel {
     fun listen() {
@@ -35,8 +34,8 @@ class CounterViewModel {
         }
         
         coroutinesScope.launch {
-            flowOrComposeValueManagerType.collect {
-                // suspend collect avaible in Flow and Compose types
+            flowValueManagerType.collect {
+                // suspend collect available in Flow
             }
         }
     }
@@ -47,12 +46,10 @@ class CounterViewModel {
 ```kotlin
 @Composable
 fun HomeScreen() {
-    val counter = remember { 
-        composeValueManager(initialValue = 0)
-    }
-    var counterRemembered by rememberComposeValueManager(initialValue = 0)
+    val counter = basicValueManager(initialValue = 0)
+    var counterRemembered by rememberBasicValueManager(initialValue = 0)
     
-    val counterState by counter.collectAsState() // ComposeValueManager is a FlowValueManager by default
+    val counterState by counter.collectAsState() // Available when using FlowValueManager
     
     // Update and listen operations are same
 }
@@ -74,14 +71,10 @@ class CounterViewModel {
 }
 ```
 
-### Listening lifecycle
+### Listening for changes
 ```kotlin
-class LifecycleHandlerImpl : LifecycleHandler<T> {
-    override fun onAfterChange(previous: T, current: T) {
-        // ...
-    }
-
-    override fun onBeforeChange(current: T, next: T) {
+class ChangeHandlerImpl : ChangeHandler<T> {
+    override fun onChanged(previous: T, next: T) {
         // ...
     }
 }
@@ -89,38 +82,47 @@ class LifecycleHandlerImpl : LifecycleHandler<T> {
 class CounterViewModel {
     val counter = basicValueManager(
         initialValue = 0,
-        lifecycleHandler = LifecycleHandlerImpl()
+        changeHandler = ChangeHandlerImpl()
     )
 }
 ```
 
-
-### Transforming value before update
+### Validations are supported
 ```kotlin
-class AlwaysEven : TransformHandler<Int> {
-
-    override fun transform(current: Int): Int {
-        return current * 2
-    }
-    
+class PositiveValidator(
+    override val message: (Int) -> String = { "Value $it should be positive" }
+) : Validator<Int> {
+    override fun isValid(value: Int): Boolean = value > 0
 }
 
-class CounterViewModel {
-    val counter = basicValueManager(
-        initialValue = 0,
-        transformHandler = AlwaysEven()
-    )
-}
+val counter = basicValueManager(initialValue = 0)
+
+counter.addValidator(PositiveValidator())
+// or
+counter += PositiveValidator()
+
+// Put a value don't trigger validations
+counter.value = -1
+// Call validate() to trigger validations
+counter.validate()
+
+// Calling update always trigger validations and don't need call validate()
+counter.update { -1 }
+
+// Checking is valid
+counter.isValid()
+
+// Getting validators messages
+counter.messages()
 ```
-
 
 ### Prefer inheritance over composition?
 All value manager types has a base class if you need transform your wrapper class in a value manager
 
 ```mermaid
 classDiagram
+    MutableState <|-- ValueManager
     ValueManager <|-- FlowValueManager
-    FlowValueManager <|-- ComposeValueManager
 ```
 
 #### Any sync context version
@@ -137,9 +139,3 @@ class CounterViewModel : BaseFlowValueManager<Int>(initialValue = 0) {
 }
 ```
 
-#### A compose context version
-```kotlin
-class CounterViewModel : BaseComposeValueManager<Int>(initialValue = 0) {
-    // Now all operations is available here
-}
-```

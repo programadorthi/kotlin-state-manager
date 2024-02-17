@@ -14,7 +14,9 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalStdlibApi::class)
 internal class ValueManagerTest {
     @Test
     fun shouldCurrentValueBeEqualsToInitialValue() {
@@ -95,6 +97,20 @@ internal class ValueManagerTest {
             errorHandlerFake.exceptions.first(),
             "Update value after closed is not a IllegalStateException"
         )
+    }
+
+    @Test
+    fun shouldUpdateValueAndClose() {
+        val manager = basicValueManager(initialValue = 0)
+
+        manager.use {
+            it.update { value ->
+                value + 1
+            }
+        }
+
+        assertEquals(1, manager.value, "Value should be updated before close")
+        assertTrue(manager.closed, "Manager should be closed")
     }
 
     @Test
