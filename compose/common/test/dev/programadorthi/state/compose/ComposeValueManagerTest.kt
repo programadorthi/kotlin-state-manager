@@ -1,12 +1,12 @@
-package dev.programadorthi.state.core
+package dev.programadorthi.state.compose
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import dev.programadorthi.state.core.compose.runComposeTest
+import dev.programadorthi.state.compose.extension.rememberComposeValueManager
+import dev.programadorthi.state.compose.helper.runComposeTest
 import dev.programadorthi.state.core.extension.basicValueManager
-import dev.programadorthi.state.core.extension.rememberBasicValueManager
+import dev.programadorthi.state.core.extension.getValue
+import dev.programadorthi.state.core.extension.setValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -82,10 +82,10 @@ internal class ComposeValueManagerTest {
             var result = -1
 
             composition.setContent {
-                var value by rememberBasicValueManager(0)
+                val (value, setValue) = rememberComposeValueManager(0)
 
                 LaunchedEffect(update) {
-                    value++
+                    setValue(value + 1)
                 }
 
                 result = value

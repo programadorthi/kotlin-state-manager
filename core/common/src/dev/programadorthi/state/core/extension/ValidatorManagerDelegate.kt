@@ -3,10 +3,6 @@ package dev.programadorthi.state.core.extension
 import dev.programadorthi.state.core.validation.Validator
 import dev.programadorthi.state.core.validation.ValidatorManager
 
-public fun <T> ValidatorManager<T>.isValid(): Boolean = isValid.value
-
-public fun <T> ValidatorManager<T>.messages(): List<String> = messages.value
-
 public operator fun <T> ValidatorManager<T>.minusAssign(element: Validator<T>) {
     removeValidator(element)
 }

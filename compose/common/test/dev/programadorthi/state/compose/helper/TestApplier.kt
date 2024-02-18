@@ -1,4 +1,4 @@
-package dev.programadorthi.state.core.compose
+package dev.programadorthi.state.compose.helper
 
 import androidx.compose.runtime.Applier
 

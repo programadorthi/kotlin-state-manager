@@ -1,15 +1,13 @@
 package dev.programadorthi.state.core
 
-import androidx.compose.runtime.SnapshotMutationPolicy
 import dev.programadorthi.state.core.handler.ChangeHandler
 import dev.programadorthi.state.core.handler.ErrorHandler
 
 internal class BasicValueManager<T>(
     initialValue: T,
-    policy: SnapshotMutationPolicy<T>,
     private val errorHandler: ErrorHandler,
     private val changeHandler: ChangeHandler<T>,
-) : BaseValueManager<T>(initialValue, policy) {
+) : BaseValueManager<T>(initialValue) {
 
     override fun onChanged(previous: T, next: T) {
         super.onChanged(previous, next)

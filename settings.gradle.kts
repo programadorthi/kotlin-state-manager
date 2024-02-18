@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "kotlin-state-manager"
 
+include("compose")
 include("core")
 include("coroutines")
 include("validators")

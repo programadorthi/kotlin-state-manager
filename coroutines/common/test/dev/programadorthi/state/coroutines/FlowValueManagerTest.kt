@@ -1,7 +1,7 @@
 package dev.programadorthi.state.coroutines
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import dev.programadorthi.state.core.extension.getValue
+import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.coroutines.extension.flowValueManager
 import dev.programadorthi.state.coroutines.fake.ChangeHandlerFake
 import dev.programadorthi.state.coroutines.fake.ErrorHandlerFake
@@ -73,7 +73,11 @@ class FlowValueManagerTest {
             advanceTimeBy(500)
         }
 
-        assertContentEquals(expected, result, "Collect function is not collecting all updated values")
+        assertContentEquals(
+            expected,
+            result,
+            "Collect function is not collecting all updated values"
+        )
     }
 
     @Test
@@ -93,7 +97,11 @@ class FlowValueManagerTest {
 
         job.cancelAndJoin()
 
-        assertContentEquals(expected, result, "Collect function is not collecting all updated values")
+        assertContentEquals(
+            expected,
+            result,
+            "Collect function is not collecting all updated values"
+        )
     }
 
     @Test
@@ -106,7 +114,11 @@ class FlowValueManagerTest {
         manager.close()
         manager.update { value -> value + 1 }
 
-        assertEquals(1, errorHandlerFake.exceptions.size, "Missing exception on update value after close manager")
+        assertEquals(
+            1,
+            errorHandlerFake.exceptions.size,
+            "Missing exception on update value after close manager"
+        )
         assertIs<IllegalStateException>(
             errorHandlerFake.exceptions.first(),
             "Update value after closed is not a IllegalStateException"
@@ -140,7 +152,11 @@ class FlowValueManagerTest {
             errorHandlerFake.exceptions.size,
             "Missing exceptions on update value crashing always"
         )
-        assertContentEquals(expected, errorHandlerFake.exceptions, "Missing exceptions on update value crashing always")
+        assertContentEquals(
+            expected,
+            errorHandlerFake.exceptions,
+            "Missing exceptions on update value crashing always"
+        )
     }
 
     @Test

@@ -1,10 +1,8 @@
 package dev.programadorthi.state.core
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import dev.programadorthi.state.core.extension.basicValueManager
-import dev.programadorthi.state.core.extension.isValid
-import dev.programadorthi.state.core.extension.messages
+import dev.programadorthi.state.core.extension.getValue
+import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.core.fake.ChangeHandlerFake
 import dev.programadorthi.state.core.fake.ErrorHandlerFake
 import dev.programadorthi.state.core.validation.Validator
@@ -183,8 +181,8 @@ internal class ValueManagerTest {
         manager.update { value ->
             value - 1
         }
-        assertFalse(manager.isValid(), "Value {${manager.value}} should be invalid")
-        assertEquals("Value -1 should be positive", manager.messages().first())
+        assertFalse(manager.isValid, "Value {${manager.value}} should be invalid")
+        assertEquals("Value -1 should be positive", manager.messages.first())
         assertEquals(0, manager.value, "Value should be equals to initial value")
     }
 }
