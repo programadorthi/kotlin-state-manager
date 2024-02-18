@@ -1,9 +1,10 @@
 package dev.programadorthi.state.core
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
 import dev.programadorthi.state.core.action.CollectAction
 import dev.programadorthi.state.core.action.UpdateAction
@@ -14,18 +15,18 @@ import dev.programadorthi.state.core.validation.ValidatorManager
 
 public abstract class BaseValueManager<T>(
     initialValue: T,
-    private val policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy(),
+    final override val policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy(),
 ) : ValueManager<T>,
     ValidatorManager<T>,
     ChangeHandler<T>,
-    ErrorHandler,
-    MutableState<T> by mutableStateOf(initialValue, policy) {
+    ErrorHandler {
 
     private val validators = mutableListOf<Validator<T>>()
 
     private var collectAction: CollectAction<T>? = null
     private var opened: Boolean = true
 
+    private var currentValue by mutableStateOf(initialValue, policy)
     private var valid = mutableStateOf(true)
     private var localMessages = mutableStateOf(emptyList<String>())
 
@@ -39,15 +40,21 @@ public abstract class BaseValueManager<T>(
         get() = localMessages
 
     override var value: T = initialValue
+        get() = currentValue
         set(value) {
             check(!closed) {
                 "Manager is closed and can't update the value"
             }
             val previous = field
+            currentValue = value
             field = value
             onChanged(previous = previous, next = field)
             collectAction?.invoke(field)
         }
+
+    override fun component1(): T = value
+
+    override fun component2(): (T) -> Unit = { value = it }
 
     override fun close() {
         opened = false

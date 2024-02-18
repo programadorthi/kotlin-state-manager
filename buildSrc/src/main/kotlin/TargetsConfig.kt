@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import java.io.File
 
 val Project.files: Array<File> get() = project.projectDir.listFiles() ?: emptyArray()
@@ -33,6 +34,17 @@ fun Project.configureTargets() {
             js(IR) {
                 nodejs()
                 browser()
+            }
+
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs {
+                moduleName = project.name
+                browser {
+                    commonWebpackConfig {
+                        outputFileName = "${project.name}.js"
+                    }
+                }
+                binaries.executable()
             }
 
             configureJs()

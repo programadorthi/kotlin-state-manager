@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("com.vanniktech.maven.publish")
 }
 
 applyBasicSetup()
