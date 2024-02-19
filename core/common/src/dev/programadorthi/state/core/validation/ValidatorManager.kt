@@ -11,4 +11,6 @@ public interface ValidatorManager<T> {
     public fun removeValidator(validator: Validator<T>)
 
     public fun validate(): Boolean
+
+    public fun onValidated(action: ValidatorAction)
 }

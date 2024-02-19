@@ -3,50 +3,57 @@ package dev.programadorthi.state.coroutines.extension
 import dev.programadorthi.state.core.ValueManager
 import dev.programadorthi.state.core.action.ChangeAction
 import dev.programadorthi.state.core.action.ErrorAction
-import dev.programadorthi.state.core.extension.plusAssign
 import dev.programadorthi.state.core.validation.Validator
+import dev.programadorthi.state.core.validation.ValidatorManager
+import dev.programadorthi.state.coroutines.BaseFlowValueManager
 import dev.programadorthi.state.coroutines.BasicFlowValueManager
-import dev.programadorthi.state.coroutines.FlowValueManager
 
 public fun <T> flowValueManager(
     initialValue: T,
-    validators: List<Validator<T>> = emptyList(),
-    changeHandler: ChangeAction<T> = { _, _ -> },
-    errorHandler: ErrorAction = { },
-): FlowValueManager<T> {
-    val valueManager = BasicFlowValueManager(initialValue = initialValue)
-    valueManager += validators
-    valueManager.onChanged(changeHandler)
-    valueManager.onError(errorHandler)
-    return valueManager
+    validators: List<Validator<T>>? = null,
+    changeHandler: ChangeAction<T>? = null,
+    errorHandler: ErrorAction? = null,
+): BaseFlowValueManager<T> = BasicFlowValueManager(initialValue = initialValue).apply {
+    validators?.forEach { addValidator(it) }
+    changeHandler?.let { onChanged(it) }
+    errorHandler?.let { onError(it) }
 }
 
 public fun <T> ValueManager<T>.asFlow(
-    validators: List<Validator<T>> = emptyList(),
-    changeHandler: ChangeAction<T> = { _, _ -> },
-    errorHandler: ErrorAction = { },
-): FlowValueManager<T> {
-    if (this is FlowValueManager) {
-        return this
+    validators: List<Validator<T>>? = null,
+    changeHandler: ChangeAction<T>? = null,
+    errorHandler: ErrorAction? = null,
+): BaseFlowValueManager<T> {
+    val instance = this
+
+    if (instance is BaseFlowValueManager) {
+        return instance
     }
-    val flow = flowValueManager(
+
+    val valueManager = flowValueManager(
         initialValue = value,
         validators = validators,
-        errorHandler = errorHandler,
         changeHandler = changeHandler,
-    )
+        errorHandler = errorHandler
+    ) as BasicFlowValueManager
 
     onError {
-        errorHandler(it)
+        valueManager.notifyParentError(it)
     }
 
     onChanged { previous, next ->
-        changeHandler(previous, next)
+        valueManager.notifyParentChanged(previous, next)
     }
 
     collect { newValue ->
-        flow.value = newValue
+        valueManager.notifyParentCollector(newValue)
     }
 
-    return flow
+    if (instance is ValidatorManager<*>) {
+        instance.onValidated { messages ->
+            valueManager.notifyParentValidator(messages)
+        }
+    }
+
+    return valueManager
 }

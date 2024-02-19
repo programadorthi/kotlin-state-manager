@@ -5,12 +5,17 @@ import dev.programadorthi.state.core.action.CollectAction
 import dev.programadorthi.state.core.action.ErrorAction
 import dev.programadorthi.state.core.action.UpdateAction
 import dev.programadorthi.state.core.validation.Validator
+import dev.programadorthi.state.core.validation.ValidatorAction
+import dev.programadorthi.state.core.validation.ValidatorManager
 
-public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
+public abstract class BaseValueManager<T>(
+    initialValue: T
+) : ValueManager<T>, ValidatorManager<T> {
 
     private val changeActions = mutableListOf<ChangeAction<T>>()
     private val collectorActions = mutableListOf<CollectAction<T>>()
     private val errorActions = mutableListOf<ErrorAction>()
+    private val validatorActions = mutableListOf<ValidatorAction>()
     private val validators = mutableListOf<Validator<T>>()
     private val localMessages = mutableListOf<String>()
 
@@ -35,7 +40,7 @@ public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
                 val previous = field
                 field = value
                 notifyChanged(previous = previous, next = field)
-                notifyCollectors(field)
+                notifyCollector(field)
             }.onFailure(::notifyError)
         }
 
@@ -94,6 +99,26 @@ public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
         errorActions += action
     }
 
+    override fun onValidated(action: ValidatorAction) {
+        validatorActions += action
+    }
+
+    protected fun notifyChanged(previous: T, next: T) {
+        changeActions.forEach { action -> action(previous, next) }
+    }
+
+    protected fun notifyCollector(value: T) {
+        collectorActions.forEach { action -> action(value) }
+    }
+
+    protected fun notifyError(throwable: Throwable) {
+        errorActions.forEach { action -> action(throwable) }
+    }
+
+    protected fun notifyValidator(messages: List<String>) {
+        validatorActions.forEach { action -> action(messages) }
+    }
+
     private fun validate(value: T) {
         val mappedMessages = validators
             .filter { validator -> validator.isValid(value).not() }
@@ -101,17 +126,6 @@ public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
         localMessages.clear()
         localMessages.addAll(mappedMessages)
         valid = mappedMessages.isEmpty()
-    }
-
-    private fun notifyChanged(previous: T, next: T) {
-        changeActions.forEach { action -> action(previous, next) }
-    }
-
-    private fun notifyCollectors(value: T) {
-        collectorActions.forEach { action -> action(value) }
-    }
-
-    private fun notifyError(throwable: Throwable) {
-        errorActions.forEach { action -> action(throwable) }
+        notifyValidator(localMessages.toList())
     }
 }

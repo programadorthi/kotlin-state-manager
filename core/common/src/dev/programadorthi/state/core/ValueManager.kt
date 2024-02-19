@@ -7,7 +7,7 @@ import dev.programadorthi.state.core.action.UpdateAction
 import dev.programadorthi.state.core.validation.ValidatorManager
 
 @OptIn(ExperimentalStdlibApi::class)
-public interface ValueManager<T> : AutoCloseable, ValidatorManager<T> {
+public interface ValueManager<T> : AutoCloseable {
     public val closed: Boolean
 
     public var value: T
