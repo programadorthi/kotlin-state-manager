@@ -9,23 +9,21 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.programadorthi.state.compose.extension.asState
+import dev.programadorthi.state.compose.asState
+import dev.programadorthi.state.compose.asValidatorState
 
 @Composable
 fun LoginScreen() {
     val viewModel = remember { LoginViewModel() }
-    val usernameState = remember { viewModel.username.asState() }
-    val passwordState = remember { viewModel.password.asState() }
-    val (username, setUsername) = remember { usernameState }
-    val (password, setPassword) = remember { passwordState }
-    val validUsername by remember { usernameState.isValidAsState }
-    val validPassword by remember { passwordState.isValidAsState }
+    val (username, setUsername) = remember { viewModel.username.asState() }
+    val (password, setPassword) = remember { viewModel.password.asState() }
+    val (validUsername, usernameMessages) = remember { viewModel.username.asValidatorState() }
+    val (validPassword, passwordMessages) = remember { viewModel.password.asValidatorState() }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -43,7 +41,7 @@ fun LoginScreen() {
             onValueChange = setUsername,
         )
         if (validUsername.not()) {
-            Text(usernameState.messages.first(), color = Color.Red)
+            Text(usernameMessages.first(), color = Color.Red)
         }
         Spacer(Modifier.height(20.dp))
         TextField(
@@ -55,7 +53,7 @@ fun LoginScreen() {
             onValueChange = setPassword,
         )
         if (validPassword.not()) {
-            Text(passwordState.messages.first(), color = Color.Red)
+            Text(passwordMessages.first(), color = Color.Red)
         }
         Spacer(Modifier.height(20.dp))
         Button(onClick = { viewModel.login() }) {

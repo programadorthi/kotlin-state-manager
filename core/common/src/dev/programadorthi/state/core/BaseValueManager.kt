@@ -36,10 +36,13 @@ public abstract class BaseValueManager<T>(
             check(!closed) {
                 "Manager is closed and can't update the value"
             }
+            val previous = field
+            if (previous == value) return
+            field = value
             runCatching {
-                val previous = field
-                field = value
                 notifyChanged(previous = previous, next = field)
+            }.onFailure(::notifyError)
+            runCatching {
                 notifyCollector(field)
             }.onFailure(::notifyError)
         }
@@ -103,19 +106,19 @@ public abstract class BaseValueManager<T>(
         validatorActions += action
     }
 
-    protected fun notifyChanged(previous: T, next: T) {
+    private fun notifyChanged(previous: T, next: T) {
         changeActions.forEach { action -> action(previous, next) }
     }
 
-    protected fun notifyCollector(value: T) {
+    private fun notifyCollector(value: T) {
         collectorActions.forEach { action -> action(value) }
     }
 
-    protected fun notifyError(throwable: Throwable) {
+    private fun notifyError(throwable: Throwable) {
         errorActions.forEach { action -> action(throwable) }
     }
 
-    protected fun notifyValidator(messages: List<String>) {
+    private fun notifyValidator(messages: List<String>) {
         validatorActions.forEach { action -> action(messages) }
     }
 

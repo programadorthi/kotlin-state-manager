@@ -1,8 +1,8 @@
 package dev.programadorthi.state.compose
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import dev.programadorthi.state.compose.extension.rememberComposeValueManager
 import dev.programadorthi.state.compose.helper.runComposeTest
 import dev.programadorthi.state.core.extension.basicValueManager
 import dev.programadorthi.state.core.extension.getValue
@@ -17,7 +17,7 @@ internal class ComposeValueManagerTest {
         var result = -1
 
         composition.setContent {
-            val value by remember { manager }
+            val value by remember { manager.asState() }
             result = value
         }
 
@@ -47,7 +47,7 @@ internal class ComposeValueManagerTest {
         var result = -1
 
         composition.setContent {
-            val value by remember { manager }
+            val value by remember { manager.asState() }
             result = value
         }
 
@@ -82,7 +82,7 @@ internal class ComposeValueManagerTest {
             var result = -1
 
             composition.setContent {
-                val (value, setValue) = rememberComposeValueManager(0)
+                val (value, setValue) = remember { basicValueManager(0).asState() }
 
                 LaunchedEffect(update) {
                     setValue(value + 1)
