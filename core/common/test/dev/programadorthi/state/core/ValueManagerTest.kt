@@ -3,13 +3,12 @@ package dev.programadorthi.state.core
 import dev.programadorthi.state.core.extension.basicValueManager
 import dev.programadorthi.state.core.extension.getValue
 import dev.programadorthi.state.core.extension.setValue
-import dev.programadorthi.state.core.fake.ChangeHandlerFake
-import dev.programadorthi.state.core.fake.ErrorHandlerFake
 import dev.programadorthi.state.core.validation.Validator
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -79,21 +78,23 @@ internal class ValueManagerTest {
 
     @Test
     fun shouldNotUpdateValueAfterRequestedToClose() {
-        val errorHandlerFake = ErrorHandlerFake()
-        val manager = basicValueManager(initialValue = 0, errorHandler = errorHandlerFake)
+        val manager = basicValueManager(initialValue = 0)
         manager.close()
-        manager.update { value ->
-            value + 1
+
+        val exception = assertFails {
+            manager.update { value ->
+                value + 1
+            }
         }
 
-        assertEquals(
-            1,
-            errorHandlerFake.exceptions.size,
-            "Missing exception on update value after close manager"
-        )
         assertIs<IllegalStateException>(
-            errorHandlerFake.exceptions.first(),
+            exception,
             "Update value after closed is not a IllegalStateException"
+        )
+        assertEquals(
+            "Manager is closed and can't update the value",
+            exception.message,
+            "Missing exception on update value after close manager"
         )
     }
 
@@ -115,11 +116,12 @@ internal class ValueManagerTest {
     fun shouldCallErrorHandler_WhenErrorHappens() {
         val random = Random.Default
         val expected = mutableListOf<Throwable>()
-
-        val errorHandlerFake = ErrorHandlerFake()
+        val exceptions = mutableListOf<Throwable>()
         val manager = basicValueManager(
             initialValue = 0,
-            errorHandler = errorHandlerFake,
+            errorHandler = {
+                exceptions.add(it)
+            },
         )
 
         repeat(times = 10) {
@@ -135,12 +137,12 @@ internal class ValueManagerTest {
         assertEquals(0, manager.value, "Value would be not updated when crashing")
         assertEquals(
             expected.size,
-            errorHandlerFake.exceptions.size,
+            exceptions.size,
             "Missing exceptions on update value crashing always"
         )
         assertContentEquals(
             expected,
-            errorHandlerFake.exceptions,
+            exceptions,
             "Missing exceptions on update value crashing always"
         )
     }
@@ -152,11 +154,13 @@ internal class ValueManagerTest {
             1 to 2,
             2 to 1,
         )
+        val events = mutableListOf<Pair<Int, Int>>()
 
-        val changeHandler = ChangeHandlerFake()
         var value by basicValueManager(
             initialValue = 0,
-            changeHandler = changeHandler,
+            changeHandler = { previous, next ->
+                events += previous to next
+            },
         )
 
         value += 1
@@ -165,7 +169,7 @@ internal class ValueManagerTest {
 
         assertContentEquals(
             expected,
-            changeHandler.events,
+            events,
             "Lifecycle events was ignored in the update value flow"
         )
     }

@@ -19,6 +19,7 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
+                api(project(":compose"))
                 api(project(":core"))
                 api(project(":coroutines"))
                 api(project(":validators"))

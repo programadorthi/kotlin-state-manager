@@ -1,6 +1,8 @@
 package dev.programadorthi.state.core
 
+import dev.programadorthi.state.core.action.ChangeAction
 import dev.programadorthi.state.core.action.CollectAction
+import dev.programadorthi.state.core.action.ErrorAction
 import dev.programadorthi.state.core.action.UpdateAction
 import dev.programadorthi.state.core.validation.ValidatorManager
 
@@ -17,4 +19,8 @@ public interface ValueManager<T> : AutoCloseable, ValidatorManager<T> {
     public fun collect(action: CollectAction<T>)
 
     public fun update(action: UpdateAction<T>)
+
+    public fun onChanged(action: ChangeAction<T>)
+
+    public fun onError(action: ErrorAction)
 }

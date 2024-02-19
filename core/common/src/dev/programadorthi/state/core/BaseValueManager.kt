@@ -1,21 +1,20 @@
 package dev.programadorthi.state.core
 
+import dev.programadorthi.state.core.action.ChangeAction
 import dev.programadorthi.state.core.action.CollectAction
+import dev.programadorthi.state.core.action.ErrorAction
 import dev.programadorthi.state.core.action.UpdateAction
-import dev.programadorthi.state.core.handler.ChangeHandler
-import dev.programadorthi.state.core.handler.ErrorHandler
 import dev.programadorthi.state.core.validation.Validator
 
-public abstract class BaseValueManager<T>(
-    initialValue: T,
-) : ValueManager<T>, ChangeHandler<T>, ErrorHandler {
+public abstract class BaseValueManager<T>(initialValue: T) : ValueManager<T> {
 
+    private val changeActions = mutableListOf<ChangeAction<T>>()
+    private val collectorActions = mutableListOf<CollectAction<T>>()
+    private val errorActions = mutableListOf<ErrorAction>()
     private val validators = mutableListOf<Validator<T>>()
     private val localMessages = mutableListOf<String>()
 
-    private var collectAction: CollectAction<T>? = null
     private var opened: Boolean = true
-
     private var valid = true
 
     override val closed: Boolean
@@ -32,10 +31,12 @@ public abstract class BaseValueManager<T>(
             check(!closed) {
                 "Manager is closed and can't update the value"
             }
-            val previous = field
-            field = value
-            onChanged(previous = previous, next = field)
-            collectAction?.invoke(field)
+            runCatching {
+                val previous = field
+                field = value
+                notifyChanged(previous = previous, next = field)
+                notifyCollectors(field)
+            }.onFailure(::notifyError)
         }
 
     override fun component1(): T = value
@@ -44,10 +45,15 @@ public abstract class BaseValueManager<T>(
 
     override fun close() {
         opened = false
+        changeActions.clear()
+        collectorActions.clear()
+        errorActions.clear()
+        validators.clear()
+        localMessages.clear()
     }
 
     override fun collect(action: CollectAction<T>) {
-        collectAction = action
+        collectorActions += action
     }
 
     override fun addValidator(validator: Validator<T>) {
@@ -66,10 +72,13 @@ public abstract class BaseValueManager<T>(
                 return
             }
             validate(newValue)
-            if (isValid) {
-                value = newValue
+            newValue
+        }.onFailure(::notifyError)
+            .onSuccess { newValue ->
+                if (isValid) {
+                    value = newValue
+                }
             }
-        }.onFailure(::onError)
     }
 
     override fun validate(): Boolean {
@@ -77,9 +86,13 @@ public abstract class BaseValueManager<T>(
         return isValid
     }
 
-    override fun onChanged(previous: T, next: T) {}
+    override fun onChanged(action: ChangeAction<T>) {
+        changeActions += action
+    }
 
-    override fun onError(exception: Throwable) {}
+    override fun onError(action: ErrorAction) {
+        errorActions += action
+    }
 
     private fun validate(value: T) {
         val mappedMessages = validators
@@ -88,5 +101,17 @@ public abstract class BaseValueManager<T>(
         localMessages.clear()
         localMessages.addAll(mappedMessages)
         valid = mappedMessages.isEmpty()
+    }
+
+    private fun notifyChanged(previous: T, next: T) {
+        changeActions.forEach { action -> action(previous, next) }
+    }
+
+    private fun notifyCollectors(value: T) {
+        collectorActions.forEach { action -> action(value) }
+    }
+
+    private fun notifyError(throwable: Throwable) {
+        errorActions.forEach { action -> action(throwable) }
     }
 }

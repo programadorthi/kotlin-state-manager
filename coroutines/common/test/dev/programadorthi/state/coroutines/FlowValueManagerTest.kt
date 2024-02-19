@@ -3,10 +3,7 @@ package dev.programadorthi.state.coroutines
 import dev.programadorthi.state.core.extension.getValue
 import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.coroutines.extension.flowValueManager
-import dev.programadorthi.state.coroutines.fake.ChangeHandlerFake
-import dev.programadorthi.state.coroutines.fake.ErrorHandlerFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -16,6 +13,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,11 +60,10 @@ class FlowValueManagerTest {
 
     @Test
     fun shouldCollectAllEmittedValue_WhenCollectIsNotSuspend() = runTest {
-        val context = coroutineContext + Job()
         val expected = listOf(1, 2, 3, 4, 5)
         val result = mutableListOf<Int>()
 
-        val manager = flowValueManager(0, coroutineContext = context)
+        val manager = flowValueManager(0)
         manager.collect(result::add)
         repeat(times = 5) {
             manager.update { value -> value + 1 }
@@ -106,22 +103,21 @@ class FlowValueManagerTest {
 
     @Test
     fun shouldNotUpdateValueAfterRequestedToClose() = runTest {
-        val errorHandlerFake = ErrorHandlerFake()
-        val manager = flowValueManager(
-            initialValue = 0,
-            errorHandler = errorHandlerFake,
-        )
+        val manager = flowValueManager(initialValue = 0)
         manager.close()
-        manager.update { value -> value + 1 }
 
-        assertEquals(
-            1,
-            errorHandlerFake.exceptions.size,
-            "Missing exception on update value after close manager"
-        )
+        val exception = assertFails {
+            manager.update { value -> value + 1 }
+        }
+
         assertIs<IllegalStateException>(
-            errorHandlerFake.exceptions.first(),
+            exception,
             "Update value after closed is not a IllegalStateException"
+        )
+        assertEquals(
+            "Manager is closed and can't update the value",
+            exception.message,
+            "Missing exception on update value after close manager"
         )
     }
 
@@ -129,11 +125,13 @@ class FlowValueManagerTest {
     fun shouldCallErrorHandler_WhenErrorHappens() = runTest {
         val random = Random.Default
         val expected = mutableListOf<Throwable>()
+        val exceptions = mutableListOf<Throwable>()
 
-        val errorHandlerFake = ErrorHandlerFake()
         val manager = flowValueManager(
             initialValue = 0,
-            errorHandler = errorHandlerFake,
+            errorHandler = {
+                exceptions.add(it)
+            },
         )
 
         repeat(times = 10) {
@@ -149,12 +147,12 @@ class FlowValueManagerTest {
         assertEquals(0, manager.value, "Value would be not updated when crashing")
         assertEquals(
             expected.size,
-            errorHandlerFake.exceptions.size,
+            exceptions.size,
             "Missing exceptions on update value crashing always"
         )
         assertContentEquals(
             expected,
-            errorHandlerFake.exceptions,
+            exceptions,
             "Missing exceptions on update value crashing always"
         )
     }
@@ -166,11 +164,13 @@ class FlowValueManagerTest {
             1 to 2,
             2 to 1,
         )
+        val events = mutableListOf<Pair<Int, Int>>()
 
-        val changeHandler = ChangeHandlerFake()
         var value by flowValueManager(
             initialValue = 0,
-            changeHandler = changeHandler,
+            changeHandler = { previous, next ->
+                events += previous to next
+            },
         )
 
         value += 1
@@ -179,7 +179,7 @@ class FlowValueManagerTest {
 
         assertContentEquals(
             expected,
-            changeHandler.events,
+            events,
             "Lifecycle events was ignored in the update value flow"
         )
     }
