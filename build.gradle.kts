@@ -5,3 +5,8 @@ plugins {
 }
 
 group = "dev.programadorthi.state"
+
+tasks.register("runJvmTests") {
+    group = "other"
+    description = "Execute JVM tests in each module only"
+}
