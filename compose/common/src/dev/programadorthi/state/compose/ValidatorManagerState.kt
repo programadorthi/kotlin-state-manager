@@ -35,4 +35,22 @@ internal class ValidatorManagerStateImpl<T>(
 
     override fun component2(): List<String> = messages
 
+    @Suppress("UNCHECKED_CAST")
+    internal fun toRestore(items: Map<String, Any?>): ValidatorManagerStateImpl<T> {
+        val msgs = items[MESSAGES_KEY] as? Array<String> ?: emptyArray()
+        valid = items[VALID_KEY] as? Boolean ?: false
+        messages = msgs.toList()
+        return this
+    }
+
+    internal fun toSave(): Map<String, Any?> = mapOf(
+        VALID_KEY to value,
+        MESSAGES_KEY to messages.toTypedArray()
+    )
+
+    private companion object {
+        private const val MESSAGES_KEY = "MESSAGES_KEY"
+        private const val VALID_KEY = "VALID_KEY"
+    }
+
 }
