@@ -90,7 +90,9 @@ public abstract class BaseValueManager<T>(
     }
 
     override fun validate(): Boolean {
-        validate(value)
+        runCatching {
+            validate(value)
+        }.onFailure(::notifyError)
         return isValid
     }
 

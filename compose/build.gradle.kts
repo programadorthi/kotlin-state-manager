@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.vanniktech.maven.publish")
+    id("com.gradleup.nmcp")
 }
 
 applyBasicSetup()
@@ -24,4 +25,8 @@ kotlin {
             }
         }
     }
+}
+
+nmcp {
+    publishAllPublications {}
 }
