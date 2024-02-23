@@ -1,16 +1,18 @@
 # kotlin-state-manager
 A multiplatform and extensible state manager. Its wrapper the managed value to deliver a better, easy and extensible way. It's like a Value class with powerS.
 
+> The project is not a replacement for Coroutines Flow or Compose State. Your origin is from 2022 when Compose wasn't multiplatform.
+
 ## How it works
-There are a lot of ways to use a Value/State Manager
+There are a lot of ways to use a Value Manager
 
 ### As a basic variable
 ```kotlin
 class CounterViewModel {
-    val counter = basicValueManager(initialValue = 0) // Basic value manager is already compose State
+    val counter = basicValueManager(initialValue = 0)
     val counterFlow = counter.asMutableStateFlow() // StateFlow version
     
-    var value by basicValueManager(initialValue = 0) // Delegate property version available by compose getValue and setValue
+    var value by basicValueManager(initialValue = 0) // Delegate property version available
 }
 ```
 
@@ -30,7 +32,7 @@ class CounterViewModel {
 class CounterViewModel {
     fun listen() {
         anyValueManagerType.collect {
-            // collect without suspend is available in all types
+            // collect without suspend is available
         }
         
         coroutinesScope.launch {
@@ -46,10 +48,10 @@ class CounterViewModel {
 ```kotlin
 @Composable
 fun HomeScreen() {
-    val counter = basicValueManager(initialValue = 0)
-    var counterRemembered by remember { counter.asState() }
+    val counter = remember { basicValueManager(initialValue = 0) }
+    var counterState by remember { counter.asState() } // remember or rememberSaveable are available
     
-    // Update and listen operations are same
+    // Update and listen operations are the same
 }
 ```
 
@@ -112,7 +114,7 @@ counter.isValid()
 counter.messages()
 ```
 
-### Prefer inheritance over composition?
+### Do you prefer inheritance over composition?
 
 ```kotlin
 class CounterValueManager : BaseValueManager<Int>(initialValue = 0) {
@@ -120,4 +122,8 @@ class CounterValueManager : BaseValueManager<Int>(initialValue = 0) {
 }
 ```
 
+### Samples
 
+Samples folder have a mix of usage.
+
+Close usage to real project [here](https://github.com/programadorthi/full-stack-kotlin/blob/main/domain-model/interactors/src/commonMain/kotlin/dev/programadorthi/full/stack/interactors/user/LoginInteractor.kt)
