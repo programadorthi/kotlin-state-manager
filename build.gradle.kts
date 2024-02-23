@@ -16,6 +16,6 @@ nmcp {
     publishAllProjectsProbablyBreakingProjectIsolation {
         username = project.providers.gradleProperty("mavenCentralUsername")
         password = project.providers.gradleProperty("mavenCentralPassword")
-        publicationType = "USER_MANAGED"
+        publicationType = "AUTOMATIC"
     }
 }
