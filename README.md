@@ -8,7 +8,7 @@ There are a lot of ways to use a Value/State Manager
 ```kotlin
 class CounterViewModel {
     val counter = basicValueManager(initialValue = 0) // Basic value manager is already compose State
-    val counterFlow = flowValueManager(initialValue = 0) // StateFlow version
+    val counterFlow = counter.asMutableStateFlow() // StateFlow version
     
     var value by basicValueManager(initialValue = 0) // Delegate property version available by compose getValue and setValue
 }
@@ -47,9 +47,7 @@ class CounterViewModel {
 @Composable
 fun HomeScreen() {
     val counter = basicValueManager(initialValue = 0)
-    var counterRemembered by rememberBasicValueManager(initialValue = 0)
-    
-    val counterState by counter.collectAsState() // Available when using FlowValueManager
+    var counterRemembered by remember { counter.asState() }
     
     // Update and listen operations are same
 }
@@ -57,33 +55,27 @@ fun HomeScreen() {
 
 ### Listening for errors
 ```kotlin
-class ErrorHandlerImpl : ErrorHandler {
-    override fun onError(exception: Throwable) {
-        // error thrown by update operation
-    }
-}
-
 class CounterViewModel {
-    val counter = basicValueManager(
-        initialValue = 0,
-        errorHandler = ErrorHandlerImpl()
-    )
+    val counter = basicValueManager(initialValue = 0)
+    
+    init {
+        counter.onError {
+            
+        }
+    }
 }
 ```
 
 ### Listening for changes
 ```kotlin
-class ChangeHandlerImpl : ChangeHandler<T> {
-    override fun onChanged(previous: T, next: T) {
-        // ...
-    }
-}
-
 class CounterViewModel {
-    val counter = basicValueManager(
-        initialValue = 0,
-        changeHandler = ChangeHandlerImpl()
-    )
+    val counter = basicValueManager(initialValue = 0)
+    
+    init {
+        counter.onChanged {
+            
+        }
+    }
 }
 ```
 
@@ -101,6 +93,10 @@ counter.addValidator(PositiveValidator())
 // or
 counter += PositiveValidator()
 
+counter.onValidated {
+    // Listen on each validation operation
+}
+
 // Put a value don't trigger validations
 counter.value = -1
 // Call validate() to trigger validations
@@ -117,25 +113,11 @@ counter.messages()
 ```
 
 ### Prefer inheritance over composition?
-All value manager types has a base class if you need transform your wrapper class in a value manager
 
-```mermaid
-classDiagram
-    MutableState <|-- ValueManager
-    ValueManager <|-- FlowValueManager
-```
-
-#### Any sync context version
 ```kotlin
-class CounterViewModel : BaseValueManager<Int>(initialValue = 0) {
+class CounterValueManager : BaseValueManager<Int>(initialValue = 0) {
     // Now all operations is available here
 }
 ```
 
-#### A coroutines context version
-```kotlin
-class CounterViewModel : BaseFlowValueManager<Int>(initialValue = 0) {
-    // Now all operations is available here
-}
-```
 
