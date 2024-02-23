@@ -13,12 +13,7 @@ tasks.register("runJvmTests") {
 }
 
 nmcp {
-    publishAggregation {
-        project(":core")
-        project(":coroutines")
-        project(":compose")
-        project(":validators")
-
+    publishAllProjectsProbablyBreakingProjectIsolation {
         username = project.providers.gradleProperty("mavenCentralUsername")
         password = project.providers.gradleProperty("mavenCentralPassword")
         publicationType = "USER_MANAGED"
