@@ -25,11 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.programadorthi.common.api.NorrisApi
 import dev.programadorthi.common.login.LoginScreen
+import dev.programadorthi.common.mvi.MVIScreen
 import dev.programadorthi.common.state.CategoriesValueManager
 import dev.programadorthi.common.state.FactsValueManager
 import dev.programadorthi.common.state.State
 import dev.programadorthi.state.compose.asState
 import dev.programadorthi.state.core.extension.basicValueManager
+import dev.programadorthi.state.core.extension.getValue
+import dev.programadorthi.state.core.extension.setValue
 
 @Composable
 fun App() {
@@ -38,6 +41,7 @@ fun App() {
     when (view) {
         1 -> LoginScreen()
         2 -> NorrisApp()
+        3 -> MVIScreen()
         else -> Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,6 +57,12 @@ fun App() {
                 view = 2
             }) {
                 Text("Norris sample")
+            }
+            Spacer(Modifier.height(20.dp))
+            Button({
+                view = 3
+            }) {
+                Text("MVI sample")
             }
         }
     }

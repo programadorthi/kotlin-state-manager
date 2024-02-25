@@ -17,12 +17,12 @@ import androidx.compose.ui.unit.dp
 import dev.programadorthi.state.compose.asState
 import dev.programadorthi.state.compose.asValidatorState
 import dev.programadorthi.state.compose.rememberSaveableValidatorState
-import dev.programadorthi.state.compose.rememberSaveableValueManagerAsState
+import dev.programadorthi.state.compose.rememberSaveableValueManager
 
 @Composable
 fun LoginScreen() {
     val viewModel = remember { LoginViewModel() }
-    val (username, setUsername) = rememberSaveableValueManagerAsState { viewModel.username }
+    val (username, setUsername) = rememberSaveableValueManager { viewModel.username }
     val (password, setPassword) = remember { viewModel.password.asState() }
     val (validUsername, usernameMessages) = rememberSaveableValidatorState { viewModel.username }
     val (validPassword, passwordMessages) = remember { viewModel.password.asValidatorState() }

@@ -12,7 +12,9 @@ public fun <T> ValidatorManager<T>.asValidatorState(): ValidatorManagerState =
 @Composable
 public fun <T> rememberValidatorState(
     validatorManager: () -> ValidatorManager<T>
-): ValidatorManagerState = remember(validatorManager).asValidatorState()
+): ValidatorManagerState = remember {
+    validatorManager().asValidatorState()
+}
 
 @Composable
 public fun <T> rememberSaveableValidatorState(
