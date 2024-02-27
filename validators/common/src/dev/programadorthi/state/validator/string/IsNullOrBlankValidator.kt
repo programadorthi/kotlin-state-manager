@@ -2,7 +2,7 @@ package dev.programadorthi.state.validator.string
 
 import dev.programadorthi.state.core.validation.Validator
 
-public data class IsNullOrBlankValidator(
+public class IsNullOrBlankValidator(
     override val message: (CharSequence?) -> String
 ) : Validator<CharSequence?> {
 

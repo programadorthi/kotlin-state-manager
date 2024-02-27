@@ -2,7 +2,7 @@ package dev.programadorthi.state.validator.string
 
 import dev.programadorthi.state.core.validation.Validator
 
-public data class IsNotEqualToValidator(
+public class IsNotEqualToValidator(
     override val message: (String?) -> String,
     private val other: String,
     private val ignoreCase: Boolean = false,

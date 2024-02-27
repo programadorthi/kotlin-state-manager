@@ -2,7 +2,7 @@ package dev.programadorthi.state.validator.any
 
 import dev.programadorthi.state.core.validation.Validator
 
-public data class IsNullValidator<T>(
+public class IsNullValidator<T>(
     override val message: (T) -> String
 ) : Validator<T> {
 
