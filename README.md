@@ -114,6 +114,46 @@ counter.isValid()
 counter.messages()
 ```
 
+### State Restoration
+
+#### Compose
+
+```kotlin
+val counter by rememberSaveableValueManager { ... }
+```
+
+Without remember function or using a class to manager, you need to pass a `SaveableStateRegistry`
+
+```kotlin
+class MyComposeViewModel(stateRegistry: SaveableStateRegistry) {
+    private var counter by composeValueManager(0, stateRegistry = stateRegistry)
+}
+```
+
+Checkout [MVIViewModel](https://github.com/programadorthi/kotlin-state-manager/blob/master/samples/compose/norris-facts/common/src/commonMain/kotlin/dev/programadorthi/common/mvi/MVIViewModel.kt) sample for more details
+
+#### Android
+
+```kotlin
+class MyActivity : ComponentActivity {
+    private var counter by androidValueManager(0)
+}
+```
+
+```kotlin
+class MyFragment : AndroidXFragment {
+    private var counter by androidValueManager(0)
+}
+```
+
+```kotlin
+class MyViewModel(savedStateHandle: SavedStateHandle) : AndroidXViewModel {
+    private var counter by androidValueManager(0, savedStateHandle = savedStateHandle)
+}
+```
+
+Checkout [MainActivity](https://github.com/programadorthi/kotlin-state-manager/blob/master/samples/compose/norris-facts/android/src/main/java/dev/programadorthi/android/MainActivity.kt) sample for more details
+
 ### Do you prefer inheritance over composition?
 
 ```kotlin
