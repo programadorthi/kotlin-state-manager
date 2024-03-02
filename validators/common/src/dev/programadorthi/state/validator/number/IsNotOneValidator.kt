@@ -6,6 +6,6 @@ public class IsNotOneValidator(
     override val message: (Number) -> String
 ) : Validator<Number> {
 
-    override fun isValid(value: Number): Boolean = value != 1
+    override fun isValid(value: Number): Boolean = value.toDouble() != 1.0
 
 }

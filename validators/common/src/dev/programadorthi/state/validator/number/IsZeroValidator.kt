@@ -6,6 +6,6 @@ public class IsZeroValidator(
     override val message: (Number) -> String
 ) : Validator<Number> {
 
-    override fun isValid(value: Number): Boolean = value == 0
+    override fun isValid(value: Number): Boolean = value.toDouble() == 0.0
 
 }
