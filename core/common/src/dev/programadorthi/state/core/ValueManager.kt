@@ -4,8 +4,11 @@ import dev.programadorthi.state.core.action.ChangeAction
 import dev.programadorthi.state.core.action.CollectAction
 import dev.programadorthi.state.core.action.ErrorAction
 import dev.programadorthi.state.core.action.UpdateAction
+import dev.programadorthi.state.core.serialization.ValueManagerSerializer
+import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalStdlibApi::class)
+@Serializable(with = ValueManagerSerializer::class)
 public interface ValueManager<T> : AutoCloseable {
     public val closed: Boolean
 

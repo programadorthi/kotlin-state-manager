@@ -47,6 +47,11 @@ public abstract class BaseValueManager<T>(
             }.onFailure(::notifyError)
         }
 
+    override fun equals(other: Any?): Boolean =
+        other is ValueManager<*> && other.value == value
+
+    override fun hashCode(): Int = value?.hashCode() ?: 0
+
     override fun component1(): T = value
 
     override fun component2(): (T) -> Unit = { value = it }
