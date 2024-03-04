@@ -1,4 +1,4 @@
-package dev.programadorthi.state.core.serialization
+package dev.programadorthi.state.serialization
 
 import dev.programadorthi.state.core.ValueManager
 import dev.programadorthi.state.core.extension.basicValueManager

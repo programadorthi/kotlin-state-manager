@@ -1,6 +1,5 @@
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization")
     id("com.android.library")
     id("com.vanniktech.maven.publish")
 }
@@ -15,18 +14,6 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-            }
-        }
-
         androidMain {
             dependencies {
                 implementation("androidx.activity:activity-ktx:1.8.2")

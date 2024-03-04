@@ -1,4 +1,4 @@
-package dev.programadorthi.state.core
+package dev.programadorthi.state.serialization
 
 import kotlinx.serialization.Serializable
 

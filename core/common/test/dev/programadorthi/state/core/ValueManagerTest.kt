@@ -4,8 +4,6 @@ import dev.programadorthi.state.core.extension.basicValueManager
 import dev.programadorthi.state.core.extension.getValue
 import dev.programadorthi.state.core.extension.setValue
 import dev.programadorthi.state.core.validation.Validator
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -190,26 +188,5 @@ internal class ValueManagerTest {
         assertFalse(manager.isValid, "Value {${manager.value}} should be invalid")
         assertEquals("Value -1 should be positive", manager.messages.first())
         assertEquals(0, manager.value, "Value should be equals to initial value")
-    }
-
-    @Test
-    fun shouldSerializeAndDeserialize() {
-        val data = SerializableValueManager(
-            intValue = basicValueManager(1),
-            stringValue = basicValueManager("valueManager"),
-            color = basicValueManager(Color("red")),
-            composite = basicValueManager(
-                basicValueManager(listOf(Color("blue"), Color("green")))
-            )
-        )
-        val json = Json.encodeToString(data)
-        println(json)
-        val decoded = Json.decodeFromString<SerializableValueManager>(json)
-
-        assertEquals(
-            """{"intValue":1,"stringValue":"valueManager","color":{"name":"red"},"composite":[{"name":"blue"},{"name":"green"}]}""",
-            json
-        )
-        assertEquals(data, decoded)
     }
 }

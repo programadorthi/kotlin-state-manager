@@ -114,6 +114,27 @@ counter.isValid()
 counter.messages()
 ```
 
+### Serialization
+
+A value manager can be encoded or decoded using Kotlin Serialization and `serialization` module.
+It is a good use case whether you have model shared with serialization infrastructure as network requests
+
+```kotlin
+import dev.programadorthi.state.serialization.ValueManager // Not from core package
+
+@Serializable
+data class MyClass(
+    val count: ValueManager<Int>,
+)
+
+val data = MyClass(count = basicValueManager(1))
+val json = Json.encodeToString(data)
+println(json) // {"count": 1}
+
+val decoded = Json.decodeFromString<MyClass>(json)
+println(data == decoded) // true
+```
+
 ### State Restoration
 
 #### Compose

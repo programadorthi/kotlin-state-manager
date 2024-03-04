@@ -22,6 +22,7 @@ rootProject.name = "kotlin-state-manager"
 include("compose")
 include("core")
 include("coroutines")
+include("serialization")
 include("validators")
 
 include(":samples:compose:norris-facts:android")
