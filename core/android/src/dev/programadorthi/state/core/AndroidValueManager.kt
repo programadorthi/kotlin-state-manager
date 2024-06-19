@@ -13,6 +13,10 @@ import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+private const val KEY = "dev.programadorthi.state.core.AndroidValueManagerState"
+
+private fun String.compoundKey(): String = "$KEY:$this"
+
 public typealias AndroidValueManager<T> = PropertyDelegateProvider<Any?, ReadWriteProperty<Any?, T>>
 
 public fun <T> androidValueManager(
@@ -32,7 +36,7 @@ public fun <T> androidValueManager(
     )
     val state = AndroidValueManagerState(
         valueManager = valueManager,
-        stateRestorationKey = stateRestorationKey,
+        stateRestorationKey = stateRestorationKey.compoundKey(),
         savedStateHandle = savedStateHandle,
         saver = saver,
     )
@@ -162,15 +166,16 @@ private fun <T> ViewModelStoreOwner.ownerValueManager(
         changeHandler = changeHandler,
         errorHandler = errorHandler,
     )
+    val key = stateRestorationKey.compoundKey()
     val provider = ViewModelProvider(
         owner = this,
         factory = AndroidValueManagerStateFactory(
-            stateRestorationKey = stateRestorationKey,
+            stateRestorationKey = key,
             valueManager = valueManager,
             saver = saver,
         )
     )
-    val state = provider[stateRestorationKey, AndroidValueManagerState::class.java]
+    val state = provider[key, AndroidValueManagerState::class.java]
     @Suppress("UNCHECKED_CAST")
     state as AndroidValueManagerState<T>
     state.valueManager

@@ -18,6 +18,7 @@ internal class ComposeValueManagerState<T>(
 
     private val valueManagerSaver = ValueManagerSaver(saver) { valueManager }
     private val state = mutableStateOf(valueManager.value, policy)
+    private val key = "$KEY:$stateRestorationKey"
 
     private var entry: SaveableStateRegistry.Entry? = null
 
@@ -55,9 +56,9 @@ internal class ComposeValueManagerState<T>(
     }
 
     private fun tryRestoreAndRegister() {
-        val keyToRestore = stateRestorationKey.takeIf { it.isNullOrBlank().not() } ?: return
+        if (stateRestorationKey.isNullOrBlank()) return
         val registry = stateRegistry ?: return
-        registry.consumeRestored(keyToRestore)?.let { consumed ->
+        registry.consumeRestored(key)?.let { consumed ->
             valueManagerSaver.restore(consumed)
         }
 
@@ -65,7 +66,7 @@ internal class ComposeValueManagerState<T>(
     }
 
     private fun register() {
-        val keyToRestore = stateRestorationKey.takeIf { it.isNullOrBlank().not() } ?: return
+        if (stateRestorationKey.isNullOrBlank()) return
         val registry = stateRegistry ?: return
 
         val saveable = {
@@ -77,7 +78,11 @@ internal class ComposeValueManagerState<T>(
             "$value cannot be saved using the current SaveableStateRegistry"
         }
         if (registry.canBeSaved(toSave)) {
-            entry = registry.registerProvider(keyToRestore, saveable)
+            entry = registry.registerProvider(key, saveable)
         }
+    }
+
+    private companion object {
+        private const val KEY = "dev.programadorthi.state.compose.ComposeValueManagerState"
     }
 }

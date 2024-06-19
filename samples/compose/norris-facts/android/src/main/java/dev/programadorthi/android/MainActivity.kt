@@ -1,5 +1,6 @@
 package dev.programadorthi.android
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         val textView = findViewById<TextView>(R.id.nameText)
         val decrementButton = findViewById<Button>(R.id.decrementButton)
         val incrementButton = findViewById<Button>(R.id.incrementButton)
+        val composeActivity = findViewById<Button>(R.id.composeActivity)
         val update = {
             textView.text = model.name + " - " + year
             decrementButton.text = "Decrement ${model.age}"
@@ -42,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             year++
             model.increment()
             update()
+        }
+
+        composeActivity.setOnClickListener {
+            startActivity(Intent(this, ComposeActivity::class.java))
         }
     }
 }
