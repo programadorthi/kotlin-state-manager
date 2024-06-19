@@ -117,6 +117,7 @@ internal class ComposeValueManagerTest {
     fun shouldRegisterToRestoration() {
         val stateRestorationKey = "key#123"
         val stateRegistry = FakeSaveableStateRegistry()
+        val expectKey = "dev.programadorthi.state.compose.ComposeValueManagerState:$stateRestorationKey"
 
         composeValueManager(
             initialValue = 0,
@@ -125,7 +126,7 @@ internal class ComposeValueManagerTest {
         )
 
         assertEquals(
-            stateRestorationKey,
+            expectKey,
             stateRegistry.consumeRestoredKey,
             "Consuming different keys is wrong"
         )
@@ -141,7 +142,7 @@ internal class ComposeValueManagerTest {
         )
 
         assertEquals(
-            "myName",
+            "dev.programadorthi.state.compose.ComposeValueManagerState:myName",
             stateRegistry.consumeRestoredKey,
             "Consuming different property keys is wrong"
         )
@@ -153,6 +154,7 @@ internal class ComposeValueManagerTest {
     fun shouldRegisterRestorationProvider() {
         val stateRestorationKey = "key#123"
         val stateRegistry = FakeSaveableStateRegistry()
+        val expectKey = "dev.programadorthi.state.compose.ComposeValueManagerState:$stateRestorationKey"
         stateRegistry.canBeSaved = true
 
         composeValueManager(
@@ -162,13 +164,13 @@ internal class ComposeValueManagerTest {
         )
 
         assertEquals(
-            stateRestorationKey,
+            expectKey,
             stateRegistry.consumeRestoredKey,
             "Consuming different keys is wrong"
         )
         assertEquals(0, stateRegistry.canBeSavedValue, "Saved values are different")
         assertEquals(
-            stateRestorationKey,
+            expectKey,
             stateRegistry.entry?.key,
             "Registering providers with different keys"
         )
@@ -179,6 +181,7 @@ internal class ComposeValueManagerTest {
     fun shouldRestorePreviousValue() {
         val stateRestorationKey = "key#123"
         val stateRegistry = FakeSaveableStateRegistry()
+        val expectKey = "dev.programadorthi.state.compose.ComposeValueManagerState:$stateRestorationKey"
         stateRegistry.canBeSaved = true
         stateRegistry.consumeRestored = 2024
 
@@ -190,13 +193,13 @@ internal class ComposeValueManagerTest {
 
         assertEquals(2024, manager.value, "Value not restored correctly")
         assertEquals(
-            stateRestorationKey,
+            expectKey,
             stateRegistry.consumeRestoredKey,
             "Consuming different keys is wrong"
         )
         assertEquals(2024, stateRegistry.canBeSavedValue, "Different can be saved values")
         assertEquals(
-            stateRestorationKey,
+            expectKey,
             stateRegistry.entry?.key,
             "Registering providers with different keys"
         )
